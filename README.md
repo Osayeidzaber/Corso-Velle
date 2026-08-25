@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Shopping%20Cart.png" width="100" />
-  <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Sparkles.png" width="100" />
+  <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Sparkles.png" width="100" />
   
   <h1 align="center">C O R S O &nbsp; V E L L E &nbsp; V 2</h1>
   <p align="center"><i>A Next-Generation 3D-Ready E-commerce Experience</i></p>
@@ -37,9 +37,9 @@ Powered by the most robust web technologies, wrapped in beautiful Liquid.
 <table align="center" width="100%">
   <tr align="center">
     <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/File%20Folder.png" width="60" /><br/><b>Assets</b></td>
-    <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Puzzle%20Piece.png" width="60" /><br/><b>Blocks</b></td>
+    <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Puzzle%20Piece.png" width="60" /><br/><b>Blocks</b></td>
     <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Gear.png" width="60" /><br/><b>Config</b></td>
-    <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Framed%20Picture.png" width="60" /><br/><b>Layout</b></td>
+    <td width="25%"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Framed%20Picture.png" width="60" /><br/><b>Layout</b></td>
   </tr>
   <tr align="center">
     <td>Where the CSS, JS, and 3D assets live.</td>
