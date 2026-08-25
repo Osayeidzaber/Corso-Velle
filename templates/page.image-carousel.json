@@ -1,0 +1,53 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "settings": {}
+    },
+    "slideshow": {
+      "type": "slideshow",
+      "blocks": {
+        "slide_1": { "type": "_slide", "settings": {} },
+        "slide_2": { "type": "_slide", "settings": {} },
+        "slide_3": { "type": "_slide", "settings": {} },
+        "slide_4": { "type": "_slide", "settings": {} },
+        "slide_5": { "type": "_slide", "settings": {} },
+        "slide_6": { "type": "_slide", "settings": {} },
+        "slide_7": { "type": "_slide", "settings": {} },
+        "slide_8": { "type": "_slide", "settings": {} },
+        "slide_9": { "type": "_slide", "settings": {} },
+        "slide_10": { "type": "_slide", "settings": {} }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3",
+        "slide_4",
+        "slide_5",
+        "slide_6",
+        "slide_7",
+        "slide_8",
+        "slide_9",
+        "slide_10"
+      ],
+      "settings": {
+        "display_mode": "full_frame",
+        "autoplay": true,
+        "autoplay_speed": 4,
+        "slide_height": "full_screen"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "slideshow"
+  ]
+}

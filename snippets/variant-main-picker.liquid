@@ -1,0 +1,579 @@
+{%- doc -%}
+  Renders a default variant picker, used to display the variant picker in the variants block.
+
+  @param {object} product_resource - The product object.
+  @param {object} [block] - The block object
+  @param {object} section - The section object.
+  @param {object} product - The current product object (used to determine selected variant state).
+{%- enddoc -%}
+
+{% assign block_settings = block.settings %}
+
+{% liquid
+  # Custom styling applies to:
+  #   - dropdowns + buttons when variant_style_class == 'custom' (unselected colors)
+  #   - buttons only when selected_variant_style_class == 'custom' (selected colors)
+  # The 'buttons' label is kept for backwards-compat of the class name.
+  assign has_custom_variant_buttons = false
+  if block_settings.variant_style_class == 'custom'
+    assign has_custom_variant_buttons = true
+  endif
+  if block_settings.variant_style == 'buttons' and block_settings.selected_variant_style_class == 'custom'
+    assign has_custom_variant_buttons = true
+  endif
+  assign fieldset_index = 0
+%}
+
+{% unless product_resource.has_only_default_variant %}
+  {% if has_custom_variant_buttons %}
+    {% render 'variant-button-custom-styles', block_settings: block_settings, block_id: block.id %}
+  {% endif %}
+  <variant-picker
+    class="variant-picker spacing-style variant-picker--{{ block_settings.alignment }}{% if has_custom_variant_buttons %} variant-picker--custom-{{ block.id }}{% endif %}"
+    style="
+      {% render 'spacing-style', settings: block_settings %}
+       {% if block_settings.option_label_text_color != blank %}
+        --variant-option-label-color: rgba({{ block_settings.option_label_text_color.rgba }});
+        --variant-option-label-color-subdued: rgba({{ block_settings.option_label_text_color.rgb }} / var(--opacity-subdued-text));
+      {% endif %}
+    "
+    data-section-id="{{ section.id }}"
+    data-product-id="{{ product_resource.id }}"
+    data-product-handle="{{ product_resource.handle }}"
+    data-product-title="{{ product_resource.title | escape }}"
+    data-block-id="{{ block.id }}"
+    data-product-url="{{ product_resource.url }}"
+    ref="mainVariantPicker"
+    {% if product.id == product_resource.id %}
+      data-template-product-match="true"
+    {% endif %}
+    {{ block.shopify_attributes }}
+    {% if request.visual_preview_mode %}
+      data-shopify-visual-preview
+    {% endif %}
+  >
+    <form class="variant-picker__form">
+      {%- for product_option in product_resource.options_with_values -%}
+        {%- liquid
+          assign swatch_count = product_option.values | map: 'swatch' | compact | size
+          assign variant_style = block_settings.variant_style
+
+          if swatch_count > 0 and block_settings.show_swatches
+            if block_settings.variant_style == 'dropdown'
+              assign variant_style = 'swatch_dropdown'
+            else
+              assign variant_style = 'swatch'
+            endif
+          endif
+
+          if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
+            assign fieldset_id = section.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
+            assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
+            assign longest_value = 0
+          endif
+        -%}
+
+        {%- assign option_name_lower = product_option.name | downcase -%}
+        {%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
+          <div
+            class="variant-option"
+            data-testid="variant-option-single"
+          >
+            {{- product_option.name | escape -}}
+            <span
+              class="variant-option__swatch-value"
+              data-testid="variant-option-single-value"
+            >
+              {{- product_option.selected_value -}}
+            </span>
+          </div>
+        {%- elsif option_name_lower contains 'size' or option_name_lower contains 'waist' -%}
+          <fieldset class="size-slider-grid variant-option variant-option--buttons" data-fieldset-index="{{ fieldset_index }}" ref="fieldsets[]" {{ option_id_attribute }}>
+            <legend class="visually-hidden">{{ product_option.name | escape }}</legend>
+            {%- for product_option_value in product_option.values -%}
+              {%- assign size_available = false -%}
+              {%- assign option_position = forloop.parentloop.index0 -%}
+              {%- for variant in product_resource.variants -%}
+                {%- if variant.options[option_position] == product_option_value and variant.available -%}
+                  {%- assign size_available = true -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+              
+              <label class="size-slider-item {% unless size_available %}is-unavailable{% endunless %}">
+                <input type="radio" 
+                       name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+                       value="{{ product_option_value | escape }}" 
+                       data-index="{{ forloop.parentloop.index0 }}"
+                       data-fieldset-index="{{ fieldset_index }}"
+                       data-input-index="{{ forloop.index0 }}"
+                       data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                       data-option-name="{{ product_option.name | escape }}"
+                       data-option-value-id="{{ product_option_value.id }}"
+                       data-option-available="{{ product_option_value.available }}"
+                       data-connected-product-url="{{ product_option_value.product_url }}"
+                       {% if product_option_value.variant.id %}
+                         data-variant-id="{{ product_option_value.variant.id }}"
+                       {% endif %}
+                       {% if product_option.selected_value == product_option_value %}
+                         data-current-checked="true"
+                         checked
+                       {% else %}
+                         data-current-checked="false"
+                       {% endif %}
+                       class="visually-hidden size-radio">
+                <div class="size-slider-box">
+                  <span class="size-slider-text">{{ product_option_value }}</span>
+                </div>
+              </label>
+            {%- endfor -%}
+          </fieldset>
+          {%- assign fieldset_index = fieldset_index | plus: 1 -%}
+          <div class="size-specs-display" id="SizeSpecsDisplay">
+            <div class="specs-placeholder">CHOOSE YOUR SIZE</div>
+          </div>
+        {%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
+          <fieldset
+            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            data-fieldset-index="{{ fieldset_index }}"
+            ref="fieldsets[]"
+            {{ option_id_attribute }}
+          >
+            <legend>
+              {{ product_option.name | escape -}}
+              {%- if variant_style == 'swatch' -%}
+                <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+              {%- endif %}
+            </legend>
+            {%- for product_option_value in product_option.values -%}
+              {% if product_option_value.size > longest_value and option_id_attribute %}
+                {% assign longest_value = product_option_value.size %}
+              {% endif %}
+              <label
+                class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}"
+              >
+                <input
+                  type="radio"
+                  name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+                  value="{{ product_option_value | escape }}"
+                  aria-label="{{ product_option_value.name | escape }}{% if product_option_value.available == false %} - {{ 'products.product.sold_out' | t }}{% endif %}"
+                  {% if product_option_value.available == false %}
+                    aria-disabled="true"
+                  {% endif %}
+                  data-previous-checked="false"
+                  data-fieldset-index="{{ fieldset_index }}"
+                  data-input-index="{{ forloop.index0 }}"
+                  data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                  data-option-name="{{ product_option.name | escape }}"
+                  data-option-value-id="{{ product_option_value.id }}"
+                  data-option-available="{{ product_option_value.available }}"
+                  data-connected-product-url="{{ product_option_value.product_url }}"
+                  {% if product_option_value.variant.id %}
+                    data-variant-id="{{ product_option_value.variant.id }}"
+                  {% endif %}
+                  {% if product_option_value.selected %}
+                    data-current-checked="true"
+                    checked
+                  {% else %}
+                    data-current-checked="false"
+                  {% endif %}
+                >
+                {% if variant_style == 'swatch' %}
+                  {% liquid
+                    assign featured_media = product_option_value.variant.featured_media
+
+                    # If the variant has no featured media, and we have a combined listing product, then fall back to
+                    # using the featured media of the child product that is linked to this option value.
+                    if featured_media == blank and product_option_value.product_url
+                      assign featured_media = product_option_value.variant.product.featured_media
+                    endif
+                  %}
+
+                  {% render 'swatch',
+                    swatch: product_option_value.swatch,
+                    variant_image: featured_media,
+                    mode: 'unscaled'
+                  %}
+                {% else %}
+                  {% if product_option_value.available == true %}
+                    <span
+                      class="variant-option__button-label__pill"
+                      data-key="variant-option-pill"
+                    ></span>
+                  {% endif %}
+                  <span
+                    class="variant-option__button-label__text"
+                    data-key="variant-option-text"
+                  >
+                    {{- product_option_value | escape -}}
+                  </span>
+                {% endif %}
+                {% render 'strikethrough-variant', product_option: product_option_value %}
+              </label>
+            {%- endfor -%}
+            {% if option_id_attribute %}
+              {% style %}
+                [data-option-id="{{ fieldset_id }}"] {
+                  --variant-ch: {{ longest_value | times: 0.65 }}em;
+                }
+              {% endstyle %}
+            {% endif %}
+          </fieldset>
+          {%- assign fieldset_index = fieldset_index | plus: 1 -%}
+        {%- elsif block_settings.variant_style == 'dropdowns' -%}
+          {%
+            # There is an opportunity to build a custom select component that will allow us to style the select element further (animation for dropdown, swatches shown in the dropdown options, etc)
+            # It's too bad as it mean rebuilding baked in behaviours but I think we've already done that for the locale selectors
+            # in dawn. So it might mean more time spent in setting it up but worth it for future updates/styling.
+          %}
+          {% liquid
+            assign property_being_updated = false
+            if settings.variant_swatch_width != settings.variant_swatch_height
+              assign property_being_updated = true
+              # (original width / original height) x new height (20px at the moment) = new width
+              assign new_width = settings.variant_swatch_width | times: 1.0 | divided_by: settings.variant_swatch_height | times: 20
+            endif
+          %}
+
+          <div class="variant-option variant-option--dropdowns">
+            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ product_option.name | escape }}</label>
+            <div
+              class="variant-option__select-wrapper"
+              style="
+                {%- if property_being_updated  -%}
+                  --variant-picker-swatch-width: clamp(10px,{{ new_width }}px, 50px);
+                {%- endif -%}
+              "
+            >
+              <select
+                id="Option-{{ block.id }}-{{ forloop.index0 }}"
+                name="options[{{ product_option.name | escape }}]"
+                class="variant-option__select"
+              >
+                {%- for product_option_value in product_option.values -%}
+                  <option
+                    value="{{ product_option_value | escape }}"
+                    data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                    data-option-name="{{ product_option.name | escape }}"
+                    data-option-value-id="{{ product_option_value.id }}"
+                    data-variant-id="{{ product_option_value.variant.id }}"
+                    data-connected-product-url="{{ product_option_value.product_url }}"
+                    {% if product_option_value.selected %}
+                      selected="selected"
+                    {% endif %}
+                  >
+                    {% if product_option_value.available == false %}
+                      {{ product_option_value | escape }} - {{ 'content.unavailable' | t }}
+                    {% else %}
+                      {{ product_option_value | escape }}
+                    {% endif %}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                class="icon icon-caret"
+                viewBox="0 0 10 6"
+              >
+                {%- render 'icon', icon: 'caret' -%}
+              </svg>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      <script type="application/json">
+        {{ product_resource.selected_or_first_available_variant | json }}
+      </script>
+    </form>
+  </variant-picker>
+{% endunless %}
+
+{% render 'swatch-styles' %}
+{% render 'variant-picker-styles' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const currentProductTitle = {{ product_resource.title | json }} || "";
+  const currentProductTags = {{ product_resource.tags | json }} || [];
+  
+  const allSizeCharts = {
+    "Knitted Polo": {
+      "M": {"Chest": "41", "Body Length": "26.00", "Shoulder": "18.00", "Sleeve Length": "9.50"},
+      "L": {"Chest": "43", "Body Length": "27.00", "Shoulder": "19.00", "Sleeve Length": "9.50"},
+      "XL": {"Chest": "45", "Body Length": "28.00", "Shoulder": "20.00", "Sleeve Length": "9.50"}
+    },
+    "Knitted": {
+      "M": {"Chest": "41", "Body Length": "26.00", "Shoulder": "18.00", "Sleeve Length": "9.50"},
+      "L": {"Chest": "43", "Body Length": "27.00", "Shoulder": "19.00", "Sleeve Length": "9.50"},
+      "XL": {"Chest": "45", "Body Length": "28.00", "Shoulder": "20.00", "Sleeve Length": "9.50"}
+    },
+    "Polo": {
+      "M": {"Chest": "41", "Body Length": "26.00", "Shoulder": "18.00", "Sleeve Length": "9.50"},
+      "L": {"Chest": "43", "Body Length": "27.00", "Shoulder": "19.00", "Sleeve Length": "9.50"},
+      "XL": {"Chest": "45", "Body Length": "28.00", "Shoulder": "20.00", "Sleeve Length": "9.50"}
+    },
+    "Formal Men's Pant": {
+      "S": {"Waist": "30", "Rise": "10.5", "Length": "39", "Leg Opening": "9.5"},
+      "M": {"Waist": "32", "Rise": "11", "Length": "40", "Leg Opening": "10"},
+      "L": {"Waist": "34", "Rise": "11.5", "Length": "41", "Leg Opening": "10.5"},
+      "XL": {"Waist": "36", "Rise": "12", "Length": "42", "Leg Opening": "11"}
+    },
+    "Formal": {
+      "S": {"Waist": "30", "Rise": "10.5", "Length": "39", "Leg Opening": "9.5"},
+      "M": {"Waist": "32", "Rise": "11", "Length": "40", "Leg Opening": "10"},
+      "L": {"Waist": "34", "Rise": "11.5", "Length": "41", "Leg Opening": "10.5"},
+      "XL": {"Waist": "36", "Rise": "12", "Length": "42", "Leg Opening": "11"}
+    },
+    "Trouser": {
+      "S": {"Waist": "30", "Rise": "10.5", "Length": "39", "Leg Opening": "9"},
+      "M": {"Waist": "32", "Rise": "11", "Length": "40", "Leg Opening": "9.5"},
+      "L": {"Waist": "34", "Rise": "11.5", "Length": "41", "Leg Opening": "10"},
+      "XL": {"Waist": "36", "Rise": "12", "Length": "42", "Leg Opening": "10.5"}
+    },
+    "Shacket": {
+      "S": {"Chest": "41", "Length": "25.5", "Shoulder": "8.5", "Sleeves": "22"},
+      "M": {"Chest": "43", "Length": "26", "Shoulder": "9", "Sleeves": "22.5"},
+      "L": {"Chest": "45", "Length": "26.3", "Shoulder": "9.5", "Sleeves": "23"},
+      "XL": {"Chest": "47", "Length": "26.5", "Shoulder": "10", "Sleeves": "23.5"}
+    },
+    "Shorts": {
+      "S": {"Waist": "30", "Rise": "10.5", "Length": "16", "Leg Opening": "9"},
+      "M": {"Waist": "32", "Rise": "11", "Length": "16.5", "Leg Opening": "9.5"},
+      "L": {"Waist": "34", "Rise": "11.5", "Length": "17", "Leg Opening": "10"},
+      "XL": {"Waist": "36", "Rise": "12", "Length": "17.5", "Leg Opening": "10.5"}
+    },
+    "Linen shirt Full Sleeve": {
+      "S": {"Chest": "40", "Length": "27", "Shoulder": "17.5", "Sleeves": "24.5"},
+      "M": {"Chest": "42", "Length": "28", "Shoulder": "18", "Sleeves": "25"},
+      "L": {"Chest": "44", "Length": "29", "Shoulder": "18.5", "Sleeves": "25.5"},
+      "XL": {"Chest": "46", "Length": "30", "Shoulder": "19", "Sleeves": "26"}
+    },
+    "Collar Shirt Short Sleeve": {
+      "M": {"Chest": "42", "Length": "25", "Shoulder": "20", "Sleeves": "9"},
+      "L": {"Chest": "45", "Length": "26", "Shoulder": "21", "Sleeves": "9.5"},
+      "XL": {"Chest": "48", "Length": "27", "Shoulder": "22", "Sleeves": "10"}
+    },
+    "Boxy Cropped Shirt Half Sleeve": {
+      "M": {"Chest": "42", "Length": "24", "Shoulder": "20", "Sleeves": "9"},
+      "L": {"Chest": "45", "Length": "25", "Shoulder": "21", "Sleeves": "9.5"},
+      "XL": {"Chest": "48", "Length": "26", "Shoulder": "22", "Sleeves": "10"}
+    },
+    "Collar Shirt Long Sleeve": {
+      "M": {"Chest": "42", "Length": "25", "Shoulder": "20", "Sleeves": "23"},
+      "L": {"Chest": "45", "Length": "26", "Shoulder": "21", "Sleeves": "23.5"},
+      "XL": {"Chest": "48", "Length": "27", "Shoulder": "22", "Sleeves": "24"}
+    },
+    "Jeans": {
+      "S": {"Waist": "28", "Length": "38.5", "Front Rise": "11.2", "Hip": "19", "Leg Opening": "9.8"},
+      "M": {"Waist": "30", "Length": "39.5", "Front Rise": "11.5", "Hip": "19.5", "Leg Opening": "10.2"},
+      "L": {"Waist": "32", "Length": "39.5", "Front Rise": "11.7", "Hip": "20", "Leg Opening": "10.6"},
+      "XL": {"Waist": "34", "Length": "40.5", "Front Rise": "12", "Hip": "21", "Leg Opening": "11"}
+    },
+    "Pants": {
+      "S": {"Waist": "28", "Length": "38.5", "Front Rise": "11.2", "Hip": "19", "Leg Opening": "9.8"},
+      "M": {"Waist": "30", "Length": "39.5", "Front Rise": "11.5", "Hip": "19.5", "Leg Opening": "10.2"},
+      "L": {"Waist": "32", "Length": "39.5", "Front Rise": "11.7", "Hip": "20", "Leg Opening": "10.6"},
+      "XL": {"Waist": "34", "Length": "40.5", "Front Rise": "12", "Hip": "21", "Leg Opening": "11"}
+    },
+    "Shirt": {
+      "S": {"Length": "39", "Chest": "41", "Shoulder": "17", "Sleeve": "22.75"},
+      "M": {"Length": "41", "Chest": "43", "Shoulder": "18", "Sleeve": "23.5"},
+      "L": {"Length": "43", "Chest": "45", "Shoulder": "18.5", "Sleeve": "23.75"},
+      "XL": {"Length": "45", "Chest": "48", "Shoulder": "19.5", "Sleeve": "26"}
+    },
+    "T-Shirt": {
+      "S": {"Chest": "40", "Length": "25"},
+      "M": {"Chest": "42", "Length": "25.5"},
+      "L": {"Chest": "44", "Length": "26"},
+      "XL": {"Chest": "46", "Length": "27"}
+    },
+    "tanktop": {
+      "M": {"Chest": "32", "Length": "26"},
+      "L": {"Chest": "34", "Length": "27"},
+      "XL": {"Chest": "36", "Length": "28"}
+    },
+    "Tank Top": {
+      "M": {"Chest": "32", "Length": "26"},
+      "L": {"Chest": "34", "Length": "27"},
+      "XL": {"Chest": "36", "Length": "28"}
+    }
+  };
+
+  let activeChart = null;
+  const normalize = (str) => str.toLowerCase().replace(/[\s-]/g, '');
+  
+  // 1. Try to match based on product tags first
+  for (const tag of currentProductTags) {
+    for (const [key, chart] of Object.entries(allSizeCharts)) {
+      if (normalize(tag) === normalize(key)) {
+        activeChart = chart;
+        break;
+      }
+    }
+    if (activeChart) break;
+  }
+
+  // 2. Fallback to product title if no tag matched
+  if (!activeChart) {
+    for (const [key, chart] of Object.entries(allSizeCharts)) {
+      if (normalize(currentProductTitle).includes(normalize(key))) {
+        activeChart = chart;
+        break;
+      }
+    }
+  }
+  
+  // Set the global config for this page
+  window.productSpecConfig = { data: activeChart };
+
+  const getSpecsForValue = (val) => {
+    const config = window.productSpecConfig;
+    if (!config || !config.data) return null;
+    const rawValue = val.trim();
+    if (config.data[rawValue]) return config.data[rawValue];
+    if (config.data[rawValue.toUpperCase()]) return config.data[rawValue.toUpperCase()];
+    if (config.data[rawValue.toLowerCase()]) return config.data[rawValue.toLowerCase()];
+    return null;
+  };
+  
+  const renderSpecs = (specs, display, label) => {
+    display.classList.add('has-content');
+    let html = `<div class="specs-current-size">${label}</div><div class="specs-grid">`;
+    for (const [key, val] of Object.entries(specs)) {
+      html += `
+        <div class="spec-item">
+          <span class="spec-label">${key}</span>
+          <span class="spec-value">${val}</span>
+        </div>
+      `;
+    }
+    html += `</div>`;
+    display.innerHTML = html;
+  };
+
+  let userHasInteracted = false;
+
+  const renderPlaceholder = (specsDisplay) => {
+    if (!specsDisplay) return;
+    specsDisplay.classList.remove('has-content');
+    specsDisplay.innerHTML = '<div class="specs-placeholder">CHOOSE YOUR SIZE</div>';
+  };
+
+  const updateDisplayToSelected = () => {
+    const specsDisplay = document.getElementById('SizeSpecsDisplay');
+    if (!activeChart || !specsDisplay) return;
+    
+    // Only persist a selection if the user actually clicked something.
+    if (!userHasInteracted) {
+      renderPlaceholder(specsDisplay);
+      return;
+    }
+    
+    const addToCartWrapper = document.getElementById('DynamicAddToCartWrapper');
+    if (addToCartWrapper) {
+      addToCartWrapper.style.display = 'block';
+    }
+    
+    const selectedRadio = document.querySelector('.size-radio:checked') || document.querySelector('.size-radio[data-current-checked="true"]');
+    if (selectedRadio) {
+      const specs = getSpecsForValue(selectedRadio.value);
+      if (specs) {
+        let label = selectedRadio.value.toUpperCase();
+        if (label === 'S') label = 'SMALL (S)';
+        else if (label === 'M') label = 'MEDIUM (M)';
+        else if (label === 'L') label = 'LARGE (L)';
+        else if (label === 'XL') label = 'EXTRA LARGE (XL)';
+        renderSpecs(specs, specsDisplay, label);
+        return;
+      }
+    }
+    renderPlaceholder(specsDisplay);
+  };
+
+  const initialSpecsDisplay = document.getElementById('SizeSpecsDisplay');
+  // If there's no chart for this product, hide the display box completely
+  if (!activeChart && initialSpecsDisplay) {
+    initialSpecsDisplay.style.display = 'none';
+  } else {
+    // Initial load: show placeholder
+    updateDisplayToSelected();
+  }
+
+  // Fallback: If a product has variants but NO size option, make sure the add to cart button is visible
+  const sizeRadiosForFallback = document.querySelectorAll('.size-radio');
+  if (sizeRadiosForFallback.length === 0) {
+    const addToCartWrapper = document.getElementById('DynamicAddToCartWrapper');
+    if (addToCartWrapper) addToCartWrapper.style.display = 'block';
+  }
+
+  // --- EVENT DELEGATION ---
+  // Using event delegation so that when Shopify completely morphs/replaces 
+  // the HTML inside <variant-picker>, our javascript doesn't instantly break.
+
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('size-radio')) {
+      userHasInteracted = true;
+      updateDisplayToSelected();
+    }
+  });
+
+  // We don't need to manually dispatch a change event on click, as the browser does it natively 
+  // for radio buttons. Dispatching it manually was causing Dawn's fetch requests to double-fire and abort.
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('size-radio')) {
+      userHasInteracted = true;
+      setTimeout(updateDisplayToSelected, 10);
+    }
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    if (!e.target || !e.target.closest) return;
+    const parentLabel = e.target.closest('.size-slider-item');
+    if (parentLabel && !parentLabel.contains(e.relatedTarget)) { // Equivalent to mouseenter
+      const specsDisplay = document.getElementById('SizeSpecsDisplay');
+      const radio = parentLabel.querySelector('.size-radio');
+      if (radio && specsDisplay && activeChart) {
+        specsDisplay.classList.add('is-hovering');
+        const specs = getSpecsForValue(radio.value);
+        if (specs) {
+          let label = radio.value.toUpperCase();
+          if (label === 'S') label = 'SMALL (S)';
+          else if (label === 'M') label = 'MEDIUM (M)';
+          else if (label === 'L') label = 'LARGE (L)';
+          else if (label === 'XL') label = 'EXTRA LARGE (XL)';
+          renderSpecs(specs, specsDisplay, label);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    if (!e.target || !e.target.closest) return;
+    const parentLabel = e.target.closest('.size-slider-item');
+    if (parentLabel && !parentLabel.contains(e.relatedTarget)) { // Equivalent to mouseleave
+      const specsDisplay = document.getElementById('SizeSpecsDisplay');
+      if (specsDisplay && activeChart) {
+        specsDisplay.classList.remove('is-hovering');
+        updateDisplayToSelected();
+      }
+    }
+  });
+
+  // Watch for dynamic changes to the radio buttons caused by Shopify's JS
+  const observer = new MutationObserver((mutations) => {
+    let shouldUpdate = false;
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && (mutation.attributeName === 'checked' || mutation.attributeName === 'data-current-checked')) {
+        if (mutation.target.classList && mutation.target.classList.contains('size-radio')) {
+          shouldUpdate = true;
+        }
+      }
+    });
+    if (shouldUpdate) updateDisplayToSelected();
+  });
+  
+  observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['checked', 'data-current-checked'] });
+});
+</script>

@@ -1,0 +1,520 @@
+{% comment %}
+  -----------------------------------------------------------------------------
+  Section: Customer Reviews Carousel
+  Luxury, ultra-smooth review slider matching Corso Velle brand aesthetics.
+  -----------------------------------------------------------------------------
+{% endcomment %}
+
+<div class="reviews-carousel-section section-{{ section.id }}" style="background-color: {{ section.settings.background_color | default: '#fbf9f5' }}; color: {{ section.settings.text_color | default: '#111111' }};">
+  <div class="reviews-carousel-container">
+    
+    <div class="reviews-header">
+      {% if section.settings.subheading != blank %}
+        <span class="reviews-subheading">{{ section.settings.subheading | escape }}</span>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="reviews-heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+      
+      <div class="reviews-aggregate">
+        <div class="aggregate-stars" aria-label="5 out of 5 stars">
+          ★★★★★
+        </div>
+        <span class="aggregate-text">{{ section.settings.aggregate_text | default: '4.9/5 Rating based on 450+ Verified Reviews' }}</span>
+      </div>
+    </div>
+
+    <div class="reviews-carousel-wrapper">
+      <button type="button" class="carousel-arrow carousel-arrow--prev" id="ReviewsPrev-{{ section.id }}" aria-label="Previous review">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="reviews-carousel-track" id="ReviewsTrack-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="review-card" {{ block.shopify_attributes }}>
+            <div class="review-card-top">
+              <div class="review-stars">
+                {% assign rating = block.settings.rating | default: 5 %}
+                {% for i in (1..5) %}
+                  {% if i <= rating %}
+                    <span class="star star--filled">★</span>
+                  {% else %}
+                    <span class="star star--empty">☆</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="verified-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Verified Buyer
+              </span>
+            </div>
+
+            <p class="review-content">“{{ block.settings.content | escape }}”</p>
+
+            <div class="review-card-footer">
+              <div class="reviewer-info">
+                <span class="reviewer-name">{{ block.settings.author_name | escape }}</span>
+                {% if block.settings.author_location != blank %}
+                  <span class="reviewer-location">{{ block.settings.author_location | escape }}</span>
+                {% endif %}
+              </div>
+              {% if block.settings.product_purchased != blank %}
+                <span class="review-product-tag">{{ block.settings.product_purchased | escape }}</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="carousel-arrow carousel-arrow--next" id="ReviewsNext-{{ section.id }}" aria-label="Next review">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <div class="reviews-dots" id="ReviewsDots-{{ section.id }}">
+      {% for block in section.blocks %}
+        <button type="button" class="dot-item{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Go to review {{ forloop.index }}"></button>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .reviews-carousel-section {
+    padding: 72px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .reviews-carousel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .reviews-header {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .reviews-subheading {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: #888888;
+    margin-bottom: 8px;
+  }
+
+  .reviews-heading {
+    font-size: 2.25rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px 0;
+    font-family: var(--font-heading--family, serif);
+  }
+
+  .reviews-aggregate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 6px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .aggregate-stars {
+    color: #c9a050;
+    letter-spacing: 2px;
+    font-size: 14px;
+  }
+
+  .aggregate-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555555;
+  }
+
+  .reviews-carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .reviews-carousel-track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    padding: 10px 4px 20px 4px;
+    width: 100%;
+  }
+
+  .reviews-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .review-card {
+    flex: 0 0 calc(33.333% - 16px);
+    scroll-snap-align: start;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 12px;
+    padding: 28px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  }
+
+  .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 900px) {
+    .review-card {
+      flex: 0 0 calc(50% - 12px);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .reviews-carousel-section {
+      padding: 48px 16px;
+    }
+    .reviews-heading {
+      font-size: 1.75rem;
+    }
+    .review-card {
+      flex: 0 0 85vw;
+      padding: 22px;
+    }
+  }
+
+  .review-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .review-stars {
+    color: #c9a050;
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+
+  .verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 3px 8px;
+    border-radius: 12px;
+  }
+
+  .review-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333333;
+    margin: 0 0 24px 0;
+    font-style: italic;
+    flex-grow: 1;
+  }
+
+  .review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+  }
+
+  .reviewer-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reviewer-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111111;
+  }
+
+  .reviewer-location {
+    font-size: 11px;
+    color: #888888;
+    margin-top: 2px;
+  }
+
+  .review-product-tag {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666666;
+    background: #f4f4f6;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .carousel-arrow {
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .carousel-arrow:hover {
+    background: #111111;
+    color: #ffffff;
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .carousel-arrow--prev {
+    left: -20px;
+  }
+
+  .carousel-arrow--next {
+    right: -20px;
+  }
+
+  @media (max-width: 900px) {
+    .carousel-arrow {
+      display: none;
+    }
+  }
+
+  .reviews-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .dot-item {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cccccc;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s ease, width 0.3s ease;
+  }
+
+  .dot-item.active {
+    background: #111111;
+    width: 24px;
+    border-radius: 10px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sectionId = '{{ section.id }}';
+    const track = document.getElementById(`ReviewsTrack-${sectionId}`);
+    const prevBtn = document.getElementById(`ReviewsPrev-${sectionId}`);
+    const nextBtn = document.getElementById(`ReviewsNext-${sectionId}`);
+    const dotsContainer = document.getElementById(`ReviewsDots-${sectionId}`);
+
+    if (!track) return;
+
+    const cards = track.querySelectorAll('.review-card');
+    const dots = dotsContainer ? dotsContainer.querySelectorAll('.dot-item') : [];
+
+    const getCardWidth = () => {
+      if (!cards.length) return 300;
+      return cards[0].offsetWidth + 24;
+    };
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -getCardWidth(), behavior: 'smooth' });
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
+      });
+    }
+
+    const updateDots = () => {
+      const scrollPos = track.scrollLeft;
+      const cardW = getCardWidth();
+      const activeIdx = Math.round(scrollPos / cardW);
+      
+      dots.forEach((dot, idx) => {
+        if (idx === activeIdx) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    };
+
+    track.addEventListener('scroll', updateDots);
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.index, 10);
+        track.scrollTo({ left: idx * getCardWidth(), behavior: 'smooth' });
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Customer Reviews",
+  "tag": "section",
+  "class": "section-customer-reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "TESTIMONIALS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Clients Say"
+    },
+    {
+      "type": "text",
+      "id": "aggregate_text",
+      "label": "Aggregate Rating Text",
+      "default": "4.9/5 Rating based on 450+ Verified Reviews"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#fbf9f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#111111"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Review Content",
+          "default": "The quality of the Knitted Polo is unmatched. The fit is impeccable and the fabric feels amazingly premium."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author Name",
+          "default": "Alexander V."
+        },
+        {
+          "type": "text",
+          "id": "author_location",
+          "label": "Location",
+          "default": "London, UK"
+        },
+        {
+          "type": "text",
+          "id": "product_purchased",
+          "label": "Purchased Item",
+          "default": "Knitted Polo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Reviews Carousel",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Marcus S.",
+            "author_location": "New York, USA",
+            "content": "Corso Velle crafts the absolute best basics in my wardrobe. The Knitted Polo fits true to size with exceptional luxury detail.",
+            "product_purchased": "Knitted Polo - Medium"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Julian B.",
+            "author_location": "Milan, Italy",
+            "content": "Outstanding quality. The craftsmanship on the leather footwear and knitted tops is world-class. Fast delivery too!",
+            "product_purchased": "Leather Footwear"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Oliver D.",
+            "author_location": "Paris, France",
+            "content": "Clean aesthetics, super comfortable, and fits perfectly. Will definitely be ordering more pieces from Timeless Basics '26.",
+            "product_purchased": "Formal Trousers"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Daniel K.",
+            "author_location": "Sydney, Australia",
+            "content": "Extremely impressed with the stitching and material texture. Feels like a high-end designer piece at a great price.",
+            "product_purchased": "Knitted Polo - Large"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
