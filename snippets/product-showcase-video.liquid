@@ -26,6 +26,23 @@
         <source src="{{ source.url }}" type="{{ source.mime_type }}">
       {%- endfor -%}
     </video>
+    <script>
+      (function() {
+        var v = document.currentScript.previousElementSibling;
+        if (v && v.tagName === 'VIDEO') {
+          v.muted = true;
+          v.defaultMuted = true;
+          v.playsInline = true;
+          var p = v.play();
+          if (p !== undefined) {
+            p.catch(function() {
+              window.addEventListener('touchstart', function() { v.play(); }, { once: true, passive: true });
+              window.addEventListener('scroll', function() { v.play(); }, { once: true, passive: true });
+            });
+          }
+        }
+      })();
+    </script>
   </div>
 {%- endif -%}
 

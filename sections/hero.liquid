@@ -1048,6 +1048,29 @@
     hero.querySelectorAll('.hero__carousel-slides, .hero__carousel-slide').forEach(function (el) {
       el.style.cssText += '; height:' + vh + ' !important;';
     });
+
+    /* 7. Ensure all hero videos autoplay seamlessly without pause or controls */
+    hero.querySelectorAll('video').forEach(function (vid) {
+      vid.muted = true;
+      vid.defaultMuted = true;
+      vid.playsInline = true;
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('webkit-playsinline', '');
+      vid.setAttribute('muted', '');
+      vid.setAttribute('autoplay', '');
+      vid.setAttribute('loop', '');
+      var playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function () {
+          var resume = function () {
+            vid.play();
+          };
+          window.addEventListener('touchstart', resume, { once: true, passive: true });
+          window.addEventListener('click', resume, { once: true, passive: true });
+          window.addEventListener('scroll', resume, { once: true, passive: true });
+        });
+      }
+    });
   }
 
   /* Run on DOM ready */
