@@ -195,7 +195,6 @@ export class ProductCard extends ProductCardLink {
     const link = this.refs.productCardLink;
     if (!(link instanceof HTMLAnchorElement)) throw new Error('Product card link not found');
 
-    this.#setupHoverVideo();
     this.#handleQuickAdd();
 
     this.addEventListener(StandardEvents.productSelect, this.#handleProductSelect);
@@ -213,7 +212,6 @@ export class ProductCard extends ProductCardLink {
   }
 
   disconnectedCallback() {
-    this.#teardownHoverVideo();
     super.disconnectedCallback();
     this.removeEventListener('click', this.navigateToProduct);
   }
@@ -450,78 +448,6 @@ export class ProductCard extends ProductCardLink {
   }
   /** @type {number | null} */
   #previousSlideIndex = null;
-
-  /** @type {HTMLVideoElement | null} */
-  #hoverVideo = null;
-
-  /** @type {HTMLElement | null} */
-  #hoverVideoWrapper = null;
-
-  /** @type {(() => void) | null} */
-  #hoverVideoCleanup = null;
-
-  /**
-   * Initializes the optional native product-video preview used on desktop hover.
-   * The existing image slideshow remains responsible for image previews and
-   * continues to receive the card-gallery pointer events.
-   */
-  #setupHoverVideo() {
-    this.#teardownHoverVideo();
-
-    const gallery = this.refs.cardGallery;
-    const wrapper = gallery?.querySelector('[data-hover-video-wrapper]');
-    const video = wrapper?.querySelector('video');
-
-    if (!(gallery instanceof HTMLElement) || !(wrapper instanceof HTMLElement) || !(video instanceof HTMLVideoElement)) {
-      return;
-    }
-
-    let isHovered = false;
-
-    const playVideo = () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-      isHovered = true;
-      video.muted = true;
-      video.playsInline = true;
-
-      video
-        .play()
-        .then(() => {
-          if (isHovered) gallery.classList.add('is-hover-video-playing');
-        })
-        .catch(() => {
-          // Autoplay can still be blocked by browser policy; keep the image preview.
-          gallery.classList.remove('is-hover-video-playing');
-        });
-    };
-
-    const stopVideo = () => {
-      isHovered = false;
-      gallery.classList.remove('is-hover-video-playing');
-      video.pause();
-      video.currentTime = 0;
-    };
-
-    gallery.addEventListener('pointerenter', playVideo);
-    gallery.addEventListener('pointerleave', stopVideo);
-
-    this.#hoverVideo = video;
-    this.#hoverVideoWrapper = wrapper;
-    this.#hoverVideoCleanup = () => {
-      gallery.removeEventListener('pointerenter', playVideo);
-      gallery.removeEventListener('pointerleave', stopVideo);
-      stopVideo();
-    };
-  }
-
-  /** Stops hover-video playback and removes its event listeners. */
-  #teardownHoverVideo() {
-    this.#hoverVideoCleanup?.();
-    this.#hoverVideoCleanup = null;
-    this.#hoverVideo = null;
-    this.#hoverVideoWrapper = null;
-  }
 
   /**
    * Handles the slideshow select event.
