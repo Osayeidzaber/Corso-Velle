@@ -12,6 +12,111 @@
     "main": {
       "type": "product-information",
       "blocks": {
+        "accordion_KKYeie": {
+          "type": "accordion",
+          "name": "t:names.accordion",
+          "settings": {
+            "icon": "caret",
+            "dividers": true,
+            "divider_color": "",
+            "type_preset": "h6",
+            "background_color": "",
+            "text_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_row_AcfL9H": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Shipping",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_yFrUwr": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_yFrUwr"
+              ]
+            },
+            "accordion_row_9DxYRc": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Care Guide",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_jtbRL3": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h3>Clothing</h3><ul><li>Check the product’s care label before washing.</li><li>Wash inside out with similar colours.</li><li>Use cold water and a mild detergent.</li><li>Choose a gentle machine cycle or hand-wash delicate pieces.</li><li>Avoid bleach and harsh chemicals.</li><li>Do not soak for extended periods.</li><li>Air-dry in the shade; avoid direct sunlight.</li><li>Do not tumble-dry unless permitted on the care label.</li><li>Iron inside out on low to medium heat.</li><li>Avoid ironing directly over embroidery, prints or logos.</li></ul><h3>Linen Products</h3><ul><li>Hand-wash or use a gentle cold-water cycle.</li><li>Do not wring or twist the fabric.</li><li>Reshape while damp and hang naturally to dry.</li><li>Steam or iron at a medium temperature.</li><li>Natural creasing is part of linen’s character.</li></ul><h3>Knitwear</h3><ul><li>Hand-wash gently in cold water.</li><li>Do not stretch, twist or wring.</li><li>Reshape and dry flat.</li><li>Store folded rather than hanging to prevent stretching.</li><li>Keep away from rough surfaces that may cause snagging.</li></ul><h3>Denim</h3><ul><li>Wash only when necessary to preserve the colour and structure.</li><li>Turn inside out and wash separately in cold water.</li><li>Avoid bleach and fabric softener.</li><li>Air-dry naturally.</li><li>Some colour transfer may occur during the first few wears and washes.</li></ul><h3>Leather Footwear</h3><ul><li>Remove surface dust with a soft, dry cloth after wearing.</li><li>Keep away from water, oil, perfume and harsh chemicals.</li><li>If wet, allow the shoes to dry naturally at room temperature.</li><li>Never use direct sunlight, heaters or hair dryers.</li><li>Apply a suitable leather conditioner occasionally.</li><li>Use shoe trees or soft paper to help retain the shape.</li><li>Store in the provided dust bag in a cool, dry place.</li><li>Rotate between wears to allow the leather to rest.</li></ul><h3>Suede Products</h3><ul><li>Use a suede brush to remove dust and restore the texture.</li><li>Avoid contact with water and oil.</li><li>Do not apply regular leather polish.</li><li>Use a suede-specific protective spray when necessary.</li></ul><h3>Important Note</h3><p>Natural leather may show slight variations in colour, grain and texture. These are not defects—they are unique characteristics of genuine leather.</p><p>Treat it well. Wear it longer.<br/>— Corso Velle</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_jtbRL3"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_row_AcfL9H",
+            "accordion_row_9DxYRc"
+          ]
+        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
@@ -308,6 +413,9 @@
           ]
         }
       },
+      "block_order": [
+        "accordion_KKYeie"
+      ],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
@@ -315,7 +423,7 @@
         "limit_details_width": true,
         "gap": 24,
         "enable_sticky_add_to_cart": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "padding-block-start": 30,
         "padding-block-end": 0
       }
