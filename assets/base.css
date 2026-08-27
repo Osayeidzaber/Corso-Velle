@@ -2406,9 +2406,56 @@ collection-card,
   }
 }
 
-/* Hide play/pause overlay icons and interaction hints on all videos */
+/* Hide play/pause overlay icons, play badges, and interaction hints on all videos */
 .deferred-media__poster-icon,
+.deferred-media__poster-icon.icon-play,
+.deferred-media__poster-icon.icon-pause,
+.deferred-media__poster-button .deferred-media__poster-icon,
+.deferred-media .icon-play,
+.deferred-media .icon-pause,
 .video-interaction-hint,
 .product-featured-video button {
   display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   Make Product Name Bold EVERYWHERE (PDP, Cards, Cart, Drawers, Modals)
+   ========================================================================== */
+.product-details h1,
+.product-details .h1,
+.product-details .h2,
+.product-details [data-testid="product-title"],
+.product-details .text-block:has(h1),
+.product-card .product-title,
+.product-card [role="heading"],
+.product-card .text-block a,
+.product-card .text-block p,
+.product-card__title,
+.product-title,
+.product-title a,
+.cart-item__title,
+.cart-primary-typography,
+.sticky-add-to-cart__title,
+.search-results-item__title,
+.predictive-search__item-heading,
+.resource-list__item .product-title,
+.resource-list__item [role="heading"] {
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   Product Page Typography (PDP) - Inter / Newsreader Font Stack
+   ========================================================================== */
+.product-information,
+.product-details,
+.product-details :is(p, span, a, button, input, select, textarea, label, summary, details, .rte, .accordion__title, .price, product-price),
+.product-media-gallery {
+  font-family: var(--font-body--family, 'Inter', 'Newsreader', 'Helvetica Neue', Arial, sans-serif);
+}
+
+.product-details :is(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) {
+  font-family: var(--font-heading--family, 'Newsreader', 'Inter', 'Helvetica Neue', Arial, serif);
 }

@@ -652,28 +652,6 @@
         window.ProductModel.loadShopifyXR();
       </script>
     {%- endif -%}
-
-    {%- if featured_product_video != blank -%}
-      {%- assign mp4_sources = featured_product_video.sources | where: 'format', 'mp4' -%}
-      {%- assign optimal_source = mp4_sources | where: 'height', 1080 | first | default: mp4_sources.first | default: featured_product_video.sources.first -%}
-
-      <div class="product-featured-video">
-        <video
-          class="product-featured-video__player"
-          src="{{ optimal_source.url }}"
-          autoplay
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          preload="auto"
-        >
-          {%- for source in featured_product_video.sources -%}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
-          {%- endfor -%}
-        </video>
-      </div>
-    {%- endif -%}
   </media-gallery>
 {% endif %}
 

@@ -114,7 +114,7 @@
         | external_video_tag: data-video-type: 'vimeo'
       }}
     {% else %}
-      {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, muted: true, controls: controls }}
+      {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, muted: true, playsinline: true, preload: 'auto', controls: controls }}
     {% endif %}
   {% endcapture %}
 {% endif %}

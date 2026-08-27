@@ -1,0 +1,49 @@
+{%- doc -%}
+  Renders a standalone showcase video for the product, completely separate from the photo gallery.
+  @param {product} product - Product object
+{%- enddoc -%}
+
+{%- assign product_videos = product.media | where: 'media_type', 'video' -%}
+{%- assign featured_video = product_videos.first -%}
+
+{%- if featured_video != blank -%}
+  {%- assign mp4_sources = featured_video.sources | where: 'format', 'mp4' -%}
+  {%- assign optimal_source = mp4_sources | where: 'height', 1080 | first | default: mp4_sources.first | default: featured_video.sources.first -%}
+
+  <div class="product-standalone-video" data-standalone-video>
+    <video
+      class="product-standalone-video__player"
+      src="{{ optimal_source.url }}"
+      autoplay
+      loop
+      muted
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      disablepictureinpicture
+    >
+      {%- for source in featured_video.sources -%}
+        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+      {%- endfor -%}
+    </video>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-standalone-video {
+    width: 100%;
+    margin-top: calc(var(--image-gap, 16px) + 16px);
+    border-radius: var(--media-radius, 0px);
+    overflow: hidden;
+    background: transparent;
+    line-height: 0;
+  }
+
+  .product-standalone-video__player {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--media-radius, 0px);
+    object-fit: cover;
+  }
+{% endstylesheet %}

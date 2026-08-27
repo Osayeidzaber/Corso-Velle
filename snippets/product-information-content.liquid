@@ -108,6 +108,7 @@
         data-testid="product-information-media"
       >
         {{ media_gallery }}
+        {% render 'product-showcase-video', product: product %}
       </div>
     {% endcapture %}
 

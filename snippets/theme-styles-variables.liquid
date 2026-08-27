@@ -327,9 +327,13 @@
           echo '--font-[preset_name]--letter-spacing: var(--letter-spacing--[preset_letter_spacing]);' | replace: '[preset_name]', preset_name | replace: '[preset_letter_spacing]', preset_letter_spacing
         else
           assign preset_font_id = 'type_font_[preset_name]' | replace: '[preset_name]', preset_name
-          assign preset_font = '--font-[preset_font]--family' | replace: '[preset_font]', settings[preset_font_id]
-          assign preset_style = '--font-[preset_font]--style' | replace: '[preset_font]', settings[preset_font_id]
-          assign preset_weight = '--font-[preset_font]--weight' | replace: '[preset_font]', settings[preset_font_id]
+          assign font_preset_type = settings[preset_font_id]
+          if font_preset_type == blank or font_preset_type == ''
+            assign font_preset_type = 'heading'
+          endif
+          assign preset_font = '--font-[preset_font]--family' | replace: '[preset_font]', font_preset_type
+          assign preset_style = '--font-[preset_font]--style' | replace: '[preset_font]', font_preset_type
+          assign preset_weight = '--font-[preset_font]--weight' | replace: '[preset_font]', font_preset_type
           assign preset_case = 'type_case_[preset_name]' | replace: '[preset_name]', preset_name
           assign preset_letter_spacing = 'type_letter_spacing_[preset_name]' | replace: '[preset_name]', preset_name
 
