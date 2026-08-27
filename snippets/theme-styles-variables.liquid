@@ -156,18 +156,18 @@
     --letter-spacing-md: 0.13em;
 
     /* Font families */
-    --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-    --font-body--style: {{ settings.type_body_font.style }};
-    --font-body--weight: {{ settings.type_body_font.weight }};
-    --font-subheading--family: {{ settings.type_subheading_font.family }}, {{ settings.type_subheading_font.fallback_families }};
-    --font-subheading--style: {{ settings.type_subheading_font.style }};
-    --font-subheading--weight: {{ settings.type_subheading_font.weight }};
-    --font-heading--family: {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
-    --font-heading--style: {{ settings.type_heading_font.style }};
-    --font-heading--weight: {{ settings.type_heading_font.weight }};
-    --font-accent--family: {{ settings.type_accent_font.family }}, {{ settings.type_accent_font.fallback_families }};
-    --font-accent--style: {{ settings.type_accent_font.style }};
-    --font-accent--weight: {{ settings.type_accent_font.weight }};
+    --font-body--family: 'Inter', 'Newsreader', 'Helvetica Neue', Arial, sans-serif;
+    --font-body--style: {{ settings.type_body_font.style | default: 'normal' }};
+    --font-body--weight: {{ settings.type_body_font.weight | default: 400 }};
+    --font-subheading--family: 'Inter', 'Newsreader', 'Helvetica Neue', Arial, sans-serif;
+    --font-subheading--style: {{ settings.type_subheading_font.style | default: 'normal' }};
+    --font-subheading--weight: {{ settings.type_subheading_font.weight | default: 500 }};
+    --font-heading--family: 'Newsreader', 'Inter', 'Helvetica Neue', Arial, serif;
+    --font-heading--style: {{ settings.type_heading_font.style | default: 'normal' }};
+    --font-heading--weight: {{ settings.type_heading_font.weight | default: 400 }};
+    --font-accent--family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-accent--style: {{ settings.type_accent_font.style | default: 'normal' }};
+    --font-accent--weight: {{ settings.type_accent_font.weight | default: 500 }};
 
     /* Margin sizes */
     --font-heading--spacing: 0.25em;

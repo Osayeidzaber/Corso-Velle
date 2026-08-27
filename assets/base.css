@@ -3,6 +3,7 @@
 }
 
 body {
+  font-family: var(--font-body--family, 'Inter', 'Newsreader', 'Helvetica Neue', Arial, sans-serif);
   color: var(--color-foreground);
   background: var(--color-background);
   display: flex;
