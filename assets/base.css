@@ -2410,15 +2410,45 @@ collection-card,
 .deferred-media__poster-icon,
 .deferred-media__poster-icon.icon-play,
 .deferred-media__poster-icon.icon-pause,
+.deferred-media__poster-button,
 .deferred-media__poster-button .deferred-media__poster-icon,
 .deferred-media .icon-play,
 .deferred-media .icon-pause,
+.video-placeholder-wrapper__poster-icon,
+.slideshow-control:is(.icon-play, .icon-pause),
 .video-interaction-hint,
-.product-featured-video button {
+.product-featured-video button,
+.product-standalone-video button {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+/* Hide native WebKit / Safari media playback buttons & control overlays */
+video::-webkit-media-controls {
+  display: none !important;
+}
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+video::-webkit-media-controls-play-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+video::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+video::-webkit-media-controls-enclosure {
+  display: none !important;
 }
 
 /* ==========================================================================

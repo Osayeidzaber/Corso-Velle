@@ -146,5 +146,38 @@
     {% endif %}
 
     <script src="{{ 'scroll-reveal.js' | asset_url }}" defer="defer"></script>
+    <script>
+      (function () {
+        function playAllVideos() {
+          document.querySelectorAll('video').forEach(function (v) {
+            v.muted = true;
+            v.defaultMuted = true;
+            v.playsInline = true;
+            v.controls = false;
+            v.setAttribute('playsinline', '');
+            v.setAttribute('webkit-playsinline', '');
+            v.setAttribute('muted', '');
+            v.setAttribute('autoplay', '');
+            v.setAttribute('loop', '');
+            var p = v.play();
+            if (p !== undefined) {
+              p.catch(function () {
+                var resume = function () { v.play(); };
+                window.addEventListener('touchstart', resume, { once: true, passive: true });
+                window.addEventListener('touchend', resume, { once: true, passive: true });
+                window.addEventListener('click', resume, { once: true, passive: true });
+                window.addEventListener('scroll', resume, { once: true, passive: true });
+              });
+            }
+          });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', playAllVideos);
+        } else {
+          playAllVideos();
+        }
+        window.addEventListener('load', playAllVideos);
+      })();
+    </script>
   </body>
 </html>

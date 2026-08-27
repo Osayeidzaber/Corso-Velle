@@ -77,26 +77,6 @@
         {% if pagination_position == 'right' %}
           {%- render 'slideshow-arrow', action: 'next', icon_style: icon_style, icon_shape: shape -%}
         {% endif %}
-      </div>
-    {% endif %}
-
-    {% if autoplay %}
-      <button
-        type="button"
-        class="slideshow-control button-secondary button-unstyled icon-pause"
-        aria-label="{{ 'accessibility.slideshow_pause' | t }}"
-        on:click="/pause"
-      >
-        {{- 'icon-pause.svg' | inline_asset_content -}}
-      </button>
-      <button
-        type="button"
-        class="slideshow-control button-secondary button-unstyled icon-play"
-        aria-label="{{ 'accessibility.slideshow_play' | t }}"
-        on:click="/play"
-      >
-        {{- 'icon-play.svg' | inline_asset_content -}}
-      </button>
     {% endif %}
 
     {% case style %}
