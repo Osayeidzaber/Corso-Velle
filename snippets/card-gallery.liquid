@@ -56,29 +56,16 @@
     assign image_sizes = sizes_attribute | strip
   endif
 
-  assign is_footwear = false
-  for tag in product.tags
-    assign tag_down = tag | downcase | strip
-    if tag_down == 'footwear' or tag_down contains 'footwear'
-      assign is_footwear = true
-      break
-    endif
-  endfor
-
-  if is_footwear
-    assign ratio = '1'
-  else
-    case block_settings.image_ratio
-      when 'landscape'
-        assign ratio = '16 / 9'
-      when 'square'
-        assign ratio = '1'
-      when 'adapt'
-        assign ratio = product.featured_media.preview_image.aspect_ratio | default: '4 / 5'
-      else
-        assign ratio = '4 / 5'
-    endcase
-  endif
+  case block_settings.image_ratio
+    when 'landscape'
+      assign ratio = '16 / 9'
+    when 'square'
+      assign ratio = '1'
+    when 'adapt'
+      assign ratio = product.featured_media.preview_image.aspect_ratio | default: '4 / 5'
+    else
+      assign ratio = '4 / 5'
+  endcase
 
   if block_settings.image_ratio == 'adapt' and block_settings.constrain_to_viewport
     if block_settings.constrain_to_viewport != ''
@@ -228,23 +215,33 @@
     </a>
 
     {% if hover_video != blank %}
+      {%- assign mp4_sources = hover_video.sources | where: 'format', 'mp4' -%}
+      {%- assign optimal_source = mp4_sources | where: 'height', 720 | first -%}
+      {%- if optimal_source == blank -%}
+        {%- assign optimal_source = mp4_sources | where: 'height', 480 | first -%}
+      {%- endif -%}
+      {%- if optimal_source == blank -%}
+        {%- assign optimal_source = mp4_sources.first | default: hover_video.sources.first -%}
+      {%- endif -%}
+
       <div
         class="card-gallery__hover-video"
         data-hover-video-wrapper
         aria-hidden="true"
       >
-        {{
-          hover_video
-          | video_tag:
-            image_size: '1200x',
-            autoplay: false,
-            loop: true,
-            muted: true,
-            controls: false,
-            playsinline: true,
-            preload: 'metadata',
-            class: 'card-gallery__hover-video-media'
-        }}
+        <video
+          class="card-gallery__hover-video-media"
+          playsinline
+          webkit-playsinline
+          muted
+          loop
+          preload="auto"
+          {% if optimal_source != blank %}src="{{ optimal_source.url }}"{% endif %}
+        >
+          {%- for source in hover_video.sources -%}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- endfor -%}
+        </video>
       </div>
     {% endif %}
   {% elsif product != blank and product.media.size == 0 %}

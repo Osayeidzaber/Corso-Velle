@@ -476,32 +476,61 @@ export class ProductCard extends ProductCardLink {
       return;
     }
 
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.loop = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    // Pre-warm the video stream when the card approaches the viewport
+    let isLoaded = false;
+    const preloadVideo = () => {
+      if (isLoaded) return;
+      isLoaded = true;
+      video.load();
+    };
+
+    let observer = null;
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              preloadVideo();
+              observer?.disconnect();
+              observer = null;
+            }
+          }
+        },
+        { rootMargin: '250px' }
+      );
+      observer.observe(this);
+    } else {
+      preloadVideo();
+    }
+
     let isHovered = false;
-    let playPromise = null;
 
     const playVideo = (event) => {
       if (event instanceof PointerEvent && event.pointerType && event.pointerType !== 'mouse') return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       isHovered = true;
+      preloadVideo();
+      gallery.classList.add('is-hover-video-playing');
+
       video.muted = true;
       video.playsInline = true;
 
-      playPromise = video.play();
+      const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            if (isHovered) {
-              gallery.classList.add('is-hover-video-playing');
-            } else {
-              video.pause();
-              video.currentTime = 0;
-              gallery.classList.remove('is-hover-video-playing');
-            }
-          })
-          .catch(() => {
+        playPromise.catch(() => {
+          if (!isHovered) {
             gallery.classList.remove('is-hover-video-playing');
-          });
+          }
+        });
       }
     };
 
@@ -511,19 +540,8 @@ export class ProductCard extends ProductCardLink {
       isHovered = false;
       gallery.classList.remove('is-hover-video-playing');
 
-      if (playPromise !== null) {
-        playPromise
-          .then(() => {
-            if (!isHovered) {
-              video.pause();
-              video.currentTime = 0;
-            }
-          })
-          .catch(() => {});
-      } else {
-        video.pause();
-        video.currentTime = 0;
-      }
+      video.pause();
+      video.currentTime = 0;
     };
 
     gallery.addEventListener('pointerenter', playVideo);
@@ -532,6 +550,7 @@ export class ProductCard extends ProductCardLink {
     this.#hoverVideo = video;
     this.#hoverVideoWrapper = wrapper;
     this.#hoverVideoCleanup = () => {
+      observer?.disconnect();
       gallery.removeEventListener('pointerenter', playVideo);
       gallery.removeEventListener('pointerleave', stopVideo);
       stopVideo();
@@ -573,12 +592,9 @@ export class ProductCard extends ProductCardLink {
    * Previews the next image.
    * @param {PointerEvent} event - The pointer event.
    */
-  /**
-   * Previews the next image.
-   * @param {PointerEvent} event - The pointer event.
-   */
   previewImage(event) {
     if (event.pointerType !== 'mouse') return;
+    if (this.#hoverVideo) return;
 
     const { slideshow } = this.refs;
 
@@ -614,6 +630,7 @@ export class ProductCard extends ProductCardLink {
    */
   resetImage(event) {
     if (event.pointerType !== 'mouse') return;
+    if (this.#hoverVideo) return;
 
     const { slideshow } = this.refs;
 
