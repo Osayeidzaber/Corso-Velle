@@ -2511,3 +2511,411 @@ body {
   }
 }
 /* --- End Corso-Velle Elegant Typography System --- */
+
+/* --- Corso-Velle Luxury Storefront Direction --- */
+:root {
+  --cv-ink: #1c1a17;
+  --cv-paper: #f4f0e8;
+  --cv-paper-deep: #e9e2d8;
+  --cv-sand: #d6c7b8;
+  --cv-tobacco: #6e584b;
+  --cv-rule: rgb(28 26 23 / 0.16);
+  --cv-rule-light: rgb(244 240 232 / 0.24);
+  --cv-luxury-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --cv-page-gutter: clamp(1.25rem, 3.2vw, 4.5rem);
+  --cv-section-space: clamp(4.5rem, 10vw, 10rem);
+}
+
+body {
+  background: var(--cv-paper);
+  color: var(--cv-ink);
+}
+
+.page-wrapper {
+  background: var(--cv-paper);
+}
+
+/* Header: quiet gallery index with a stronger brand center */
+#header-group {
+  z-index: var(--layer-sticky) !important;
+}
+
+header-component {
+  --header-padding: 0;
+  background: var(--cv-paper);
+  border-bottom: 1px solid var(--cv-rule);
+  color: var(--cv-ink);
+}
+
+header-component .header__row {
+  background: transparent;
+}
+
+header-component .header__row--top {
+  min-height: clamp(4.5rem, 7vw, 6.5rem);
+  border-bottom: 0;
+}
+
+header-component .header__row--bottom {
+  border-top: 1px solid var(--cv-rule);
+  min-height: 2.8rem;
+}
+
+header-component .header__columns {
+  padding-inline: var(--cv-page-gutter);
+}
+
+header-component .header__row--top .header__columns {
+  padding-block: 1rem;
+}
+
+header-component .header__row--bottom .header__columns {
+  padding-block: 0.2rem;
+}
+
+header-component .header-menu,
+header-component .menu-list,
+header-component .menu-list__list,
+header-component .overflow-menu {
+  align-items: center;
+}
+
+header-component .menu-list__list {
+  gap: clamp(1rem, 2.2vw, 2.8rem);
+}
+
+header-component .menu-list__link,
+header-component .header-actions__action,
+header-component .localization-selector {
+  color: var(--cv-ink);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+header-component .menu-list__link {
+  position: relative;
+  padding-block: 1rem;
+}
+
+header-component .menu-list__link::after {
+  background: currentcolor;
+  bottom: 0.38rem;
+  content: '';
+  height: 1px;
+  left: 0;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.45s var(--cv-luxury-ease);
+  width: 100%;
+}
+
+header-component .menu-list__link:hover::after,
+header-component .menu-list__link--active::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+header-component .header-actions {
+  gap: 0.35rem;
+}
+
+header-component .header-actions__action {
+  min-height: 2.4rem;
+  min-width: 2.4rem;
+  padding-inline: 0.65rem;
+}
+
+header-component .header-actions__action:hover,
+header-component .localization-selector:hover,
+header-component .menu-list__link:hover {
+  color: var(--cv-tobacco);
+}
+
+header-component .header__row--bottom .menu-list__link {
+  font-size: 0.62rem;
+  letter-spacing: 0.17em;
+  padding-block: 0.6rem;
+}
+
+header-component .menu-list__submenu {
+  background: var(--cv-paper);
+  border-top: 1px solid var(--cv-rule);
+  box-shadow: 0 1.5rem 3rem rgb(28 26 23 / 0.08);
+}
+
+header-component .mega-menu {
+  padding-block: 2rem 3rem;
+}
+
+/* Hero: cinematic image with editorial type and quiet control */
+.hero {
+  background: var(--cv-ink);
+}
+
+.hero__container {
+  border: 0 !important;
+  isolation: isolate;
+}
+
+.hero__media-grid::after {
+  background: linear-gradient(180deg, rgb(28 26 23 / 0.05) 20%, rgb(28 26 23 / 0.72) 100%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: var(--layer-flat);
+}
+
+.hero__media {
+  filter: saturate(0.82) contrast(1.04);
+  transform: scale(1.015);
+  transition: filter 1.2s var(--cv-luxury-ease), transform 1.8s var(--cv-luxury-ease);
+}
+
+.hero:hover .hero__media {
+  filter: saturate(0.94) contrast(1.04);
+  transform: scale(1.03);
+}
+
+.hero__content-wrapper {
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  padding: clamp(1.5rem, 4vw, 4rem) var(--cv-page-gutter) clamp(2.25rem, 5vw, 5rem) !important;
+  pointer-events: none;
+  z-index: var(--layer-heightened) !important;
+}
+
+.hero__content-wrapper .group-block-content {
+  max-width: min(100%, 38rem);
+}
+
+.hero__content-wrapper .text-block {
+  max-width: 14ch !important;
+}
+
+.hero__content-wrapper .text-block :is(h1, h2, h3) {
+  color: var(--cv-paper) !important;
+  font-family: var(--font-accent--family) !important;
+  font-size: clamp(3.5rem, 10vw, 9rem) !important;
+  font-weight: var(--font-accent--weight);
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+.hero__content-wrapper .button,
+.hero__content-wrapper .button-unstyled {
+  border-bottom: 1px solid var(--cv-paper) !important;
+  color: var(--cv-paper) !important;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  margin-top: 1.25rem;
+  padding: 0.7rem 0 !important;
+  text-transform: uppercase;
+}
+
+.hero__content-wrapper .button:hover,
+.hero__content-wrapper .button-unstyled:hover {
+  background: transparent !important;
+  color: var(--cv-sand) !important;
+  transform: translateX(0.3rem);
+}
+
+/* Homepage rhythm and editorial section framing */
+main.content-for-layout > .shopify-section:not(:first-child) {
+  border-top: 1px solid var(--cv-rule);
+}
+
+main.content-for-layout > .shopify-section > .section {
+  padding-block: var(--cv-section-space);
+}
+
+main.content-for-layout .section-header,
+main.content-for-layout .section-heading,
+main.content-for-layout .resource-list__header {
+  margin-bottom: clamp(1.75rem, 4vw, 3.5rem);
+}
+
+main.content-for-layout :is(.section-header, .section-heading) :is(h1, h2, h3, .h1, .h2, .h3) {
+  font-size: clamp(2rem, 4vw, 4.4rem);
+  letter-spacing: var(--cv-type-heading-tracking);
+  line-height: 0.98;
+}
+
+/* Product merchandising: image first, information quiet and aligned */
+.product-card,
+.collection-card {
+  background: transparent;
+  box-shadow: none !important;
+  transform: none;
+}
+
+.product-card:hover,
+.collection-card:hover {
+  box-shadow: none !important;
+}
+
+.product-card .card-gallery,
+.product-card .product-card__image,
+.collection-card .collection-card__image {
+  background: var(--cv-paper-deep);
+  overflow: hidden;
+}
+
+.product-card .card-gallery img,
+.product-card .product-card__image img,
+.collection-card .collection-card__image img {
+  transition: transform 0.9s var(--cv-luxury-ease), filter 0.9s var(--cv-luxury-ease);
+}
+
+.product-card:hover .card-gallery img,
+.product-card:hover .product-card__image img,
+.collection-card:hover .collection-card__image img {
+  filter: saturate(0.9);
+  transform: scale(1.025);
+}
+
+.product-card .product-card__content,
+.product-card .product-card__info,
+.product-card .product-card__details {
+  padding-block: 0.9rem 0.4rem;
+}
+
+.product-card :is(.product-title, .product-card__title, [class*='product-title']) {
+  color: var(--cv-ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+.product-card :is(.price, product-price, [class*='price']) {
+  color: var(--cv-tobacco);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.product-card .badge,
+.product-card [class*='badge'] {
+  background: var(--cv-ink);
+  border-radius: 0;
+  color: var(--cv-paper);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  padding: 0.4rem 0.55rem;
+  text-transform: uppercase;
+}
+
+/* Editorial image sections */
+.media-with-content,
+.slideshow,
+.video-slideshow {
+  overflow: hidden;
+}
+
+.media-with-content img,
+.slideshow img,
+.video-slideshow img,
+.media-with-content video,
+.slideshow video,
+.video-slideshow video {
+  filter: saturate(0.86) contrast(1.03);
+}
+
+/* Controls should read like fashion editorial navigation, not generic UI */
+:is(.button, .button-secondary, .btn) {
+  border-radius: 0 !important;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  min-height: 2.8rem;
+  padding-inline: 1.35rem;
+  text-transform: uppercase;
+}
+
+:is(.button, .button-secondary, .btn):hover {
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+/* Footer: dark, quiet, and anchored */
+footer {
+  background: var(--cv-ink);
+  color: var(--cv-paper);
+  margin-top: var(--cv-section-space);
+}
+
+footer a,
+footer button,
+footer .text-block,
+footer p,
+footer h1,
+footer h2,
+footer h3,
+footer h4 {
+  color: var(--cv-paper);
+}
+
+footer a {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+footer a:hover {
+  color: var(--cv-sand);
+}
+
+/* Responsive spacing and type */
+@media screen and (max-width: 749px) {
+  header-component .header__columns {
+    padding-inline: 1rem;
+  }
+
+  header-component .header__row--top {
+    min-height: 4rem;
+  }
+
+  header-component .header-actions__action {
+    padding-inline: 0.3rem;
+  }
+
+  .hero__content-wrapper .text-block :is(h1, h2, h3) {
+    font-size: clamp(3.2rem, 16vw, 5.8rem) !important;
+  }
+
+  main.content-for-layout > .shopify-section > .section {
+    padding-block: 4rem;
+  }
+
+  .product-card .product-card__content,
+  .product-card .product-card__info,
+  .product-card .product-card__details {
+    padding-block: 0.65rem 0.25rem;
+  }
+
+  .product-card :is(.product-title, .product-card__title, [class*='product-title']) {
+    font-size: 0.78rem;
+  }
+
+  .product-card :is(.price, product-price, [class*='price']) {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__media,
+  .product-card img,
+  .collection-card img {
+    transition: none;
+    transform: none !important;
+  }
+}
+/* --- End Corso-Velle Luxury Storefront Direction --- */
