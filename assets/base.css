@@ -2405,3 +2405,10 @@ collection-card,
     box-sizing: border-box;
   }
 }
+
+/* Hide play/pause overlay icons and interaction hints on all videos */
+.deferred-media__poster-icon,
+.video-interaction-hint,
+.product-featured-video button {
+  display: none !important;
+}
