@@ -2404,3 +2404,110 @@ collection-card,
     box-sizing: border-box;
   }
 }
+
+/* --- Corso-Velle Elegant Typography System --- */
+:root {
+  --cv-type-ui-tracking: 0.075em;
+  --cv-type-label-tracking: 0.12em;
+  --cv-type-display-tracking: -0.035em;
+  --cv-type-heading-tracking: -0.025em;
+  --cv-type-body-leading: 1.55;
+  --cv-type-heading-leading: 1.08;
+  --cv-type-display-leading: 0.98;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body--family);
+  font-weight: var(--font-body--weight);
+}
+
+body {
+  line-height: var(--cv-type-body-leading);
+}
+
+:is(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  text-wrap: balance;
+}
+
+:is(h1, .h1) {
+  letter-spacing: var(--cv-type-display-tracking);
+  line-height: var(--cv-type-display-leading);
+}
+
+:is(h2, .h2, h3, .h3) {
+  letter-spacing: var(--cv-type-heading-tracking);
+  line-height: var(--cv-type-heading-leading);
+}
+
+:is(h4, .h4, h5, .h5, h6, .h6) {
+  letter-spacing: var(--cv-type-label-tracking);
+  line-height: 1.2;
+}
+
+:is(header, nav, header-component, .header, .header-actions) a,
+:is(header, nav, header-component, .header, .header-actions) button,
+:is(.button, button, .btn) {
+  letter-spacing: var(--cv-type-ui-tracking);
+}
+
+:is(.product-card, product-card) :is(.text-block, .product-title, .product-card__title, [class*='product-title']) {
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+:is(.product-card, product-card) :is(.price, product-price, [class*='price']) {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+:is(.badge, .product-badge, [class*='badge']) {
+  font-family: var(--font-body--family);
+  font-weight: 600;
+  letter-spacing: var(--cv-type-label-tracking);
+}
+
+:is(.section-header, .collection-banner, .hero__content, .hero__content-wrapper) :is(.eyebrow, .overline, .subtitle, [class*='eyebrow'], [class*='subtitle']) {
+  font-family: var(--font-body--family);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: var(--cv-type-label-tracking);
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 750px) {
+  :is(.section-header, .collection-banner, .hero__content, .hero__content-wrapper) :is(h1, .h1) {
+    max-width: 12ch;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  :is(h1, .h1) {
+    letter-spacing: -0.025em;
+  }
+
+  :is(header, nav, header-component, .header, .header-actions) a,
+  :is(header, nav, header-component, .header, .header-actions) button,
+  :is(.button, button, .btn) {
+    letter-spacing: 0.055em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+/* --- End Corso-Velle Elegant Typography System --- */
