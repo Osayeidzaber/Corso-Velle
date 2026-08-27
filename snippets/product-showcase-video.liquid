@@ -47,13 +47,20 @@
 {%- endif -%}
 
 {% stylesheet %}
+  .product-information__media media-gallery {
+    position: relative !important;
+    top: auto !important;
+  }
+
   .product-standalone-video {
+    position: relative;
     width: 100%;
     margin-top: calc(var(--image-gap, 16px) + 16px);
     border-radius: var(--media-radius, 0px);
     overflow: hidden;
     background: transparent;
     line-height: 0;
+    clear: both;
   }
 
   .product-standalone-video__player {

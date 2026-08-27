@@ -2425,6 +2425,17 @@ collection-card,
   pointer-events: none !important;
 }
 
+/* Ensure product media gallery scrolls naturally and does not stick/overlap the video below it */
+.product-information__media media-gallery {
+  position: relative !important;
+  top: auto !important;
+}
+.product-information__media .product-standalone-video {
+  position: relative !important;
+  clear: both !important;
+  width: 100% !important;
+}
+
 /* Hide native WebKit / Safari media playback buttons & control overlays */
 video::-webkit-media-controls {
   display: none !important;
