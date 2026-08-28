@@ -160,6 +160,12 @@
           video.setAttribute('playsinline', '');
           video.setAttribute('webkit-playsinline', '');
           video.setAttribute('x5-playsinline', '');
+          video.setAttribute('preload', 'auto');
+
+          // Trigger early buffer preload if not already started
+          if (video.readyState === 0) {
+            try { video.load(); } catch (e) {}
+          }
 
           // Check if the video is actually visible on the screen
           var style = window.getComputedStyle(video);

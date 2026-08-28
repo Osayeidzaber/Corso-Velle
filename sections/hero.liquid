@@ -143,6 +143,10 @@
   {%- endif -%}
 
   {%- if media_1 == 'video' -%}
+    {%- assign mp4_sources = section.settings.video_1.sources | where: 'format', 'mp4' -%}
+    {%- assign source_720 = mp4_sources | where: 'height', 720 | first -%}
+    {%- assign source_1080 = mp4_sources | where: 'height', 1080 | first -%}
+    {%- assign primary_source = source_720 | default: source_1080 | default: mp4_sources.first | default: section.settings.video_1.sources.first -%}
     <div class="{{ media_wrapper_desktop_class }}">
       <video
         class="hero__media"
@@ -156,8 +160,13 @@
         preload="auto"
         disablepictureinpicture
       >
+        {%- if primary_source != blank -%}
+          <source src="{{ primary_source.url }}" type="{{ primary_source.mime_type }}">
+        {%- endif -%}
         {%- for source in section.settings.video_1.sources -%}
-          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- if source.url != primary_source.url -%}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- endif -%}
         {%- endfor -%}
       </video>
     </div>
@@ -184,6 +193,10 @@
     {%- endif -%}
 
     {%- if media_1_mobile == 'video' -%}
+      {%- assign mp4_sources_mobile = section.settings.video_1_mobile.sources | where: 'format', 'mp4' -%}
+      {%- assign source_mobile_720 = mp4_sources_mobile | where: 'height', 720 | first -%}
+      {%- assign source_mobile_480 = mp4_sources_mobile | where: 'height', 480 | first -%}
+      {%- assign primary_mobile_source = source_mobile_720 | default: source_mobile_480 | default: mp4_sources_mobile.first | default: section.settings.video_1_mobile.sources.first -%}
       <div class="{{ media_wrapper_mobile_class }}">
         <video
           class="hero__media"
@@ -197,8 +210,13 @@
           preload="auto"
           disablepictureinpicture
         >
+          {%- if primary_mobile_source != blank -%}
+            <source src="{{ primary_mobile_source.url }}" type="{{ primary_mobile_source.mime_type }}">
+          {%- endif -%}
           {%- for source in section.settings.video_1_mobile.sources -%}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- if source.url != primary_mobile_source.url -%}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- endif -%}
           {%- endfor -%}
         </video>
       </div>
@@ -226,6 +244,10 @@
   {%- endif -%}
 
   {%- if media_2 == 'video' -%}
+    {%- assign mp4_sources_2 = section.settings.video_2.sources | where: 'format', 'mp4' -%}
+    {%- assign source_2_720 = mp4_sources_2 | where: 'height', 720 | first -%}
+    {%- assign source_2_1080 = mp4_sources_2 | where: 'height', 1080 | first -%}
+    {%- assign primary_source_2 = source_2_720 | default: source_2_1080 | default: mp4_sources_2.first | default: section.settings.video_2.sources.first -%}
     <div class="{{ media_wrapper_desktop_class }}">
       <video
         class="hero__media"
@@ -239,8 +261,13 @@
         preload="auto"
         disablepictureinpicture
       >
+        {%- if primary_source_2 != blank -%}
+          <source src="{{ primary_source_2.url }}" type="{{ primary_source_2.mime_type }}">
+        {%- endif -%}
         {%- for source in section.settings.video_2.sources -%}
-          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- if source.url != primary_source_2.url -%}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- endif -%}
         {%- endfor -%}
       </video>
     </div>
@@ -267,6 +294,10 @@
     {%- endif -%}
 
     {%- if media_2_mobile == 'video' -%}
+      {%- assign mp4_sources_2_mobile = section.settings.video_2_mobile.sources | where: 'format', 'mp4' -%}
+      {%- assign source_2_m_720 = mp4_sources_2_mobile | where: 'height', 720 | first -%}
+      {%- assign source_2_m_480 = mp4_sources_2_mobile | where: 'height', 480 | first -%}
+      {%- assign primary_source_2_mobile = source_2_m_720 | default: source_2_m_480 | default: mp4_sources_2_mobile.first | default: section.settings.video_2_mobile.sources.first -%}
       <div class="{{ media_wrapper_mobile_class }}">
         <video
           class="hero__media"
@@ -280,8 +311,13 @@
           preload="auto"
           disablepictureinpicture
         >
+          {%- if primary_source_2_mobile != blank -%}
+            <source src="{{ primary_source_2_mobile.url }}" type="{{ primary_source_2_mobile.mime_type }}">
+          {%- endif -%}
           {%- for source in section.settings.video_2_mobile.sources -%}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- if source.url != primary_source_2_mobile.url -%}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- endif -%}
           {%- endfor -%}
         </video>
       </div>
