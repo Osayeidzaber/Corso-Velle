@@ -907,37 +907,7 @@
             "padding-inline-start": 48,
             "padding-inline-end": 48
           },
-          "blocks": {
-            "text_RQdgNj": {
-              "type": "text",
-              "name": "t:names.text",
-              "settings": {
-                "text": "<h3>Fully Handamade Footwear</h3>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "right",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "#fff4f4",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_RQdgNj"
-          ]
+          "blocks": {}
         }
       },
       "block_order": [
