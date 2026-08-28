@@ -881,55 +881,130 @@
         "padding-block-end": 0
       }
     },
-    "slideshow_Fi8pxM": {
-      "type": "slideshow",
+    "section_LV4TVR": {
+      "type": "section",
       "blocks": {
-        "slide_QknTdR": {
-          "type": "_slide",
+        "video_mNzQVR": {
+          "type": "video",
+          "name": "t:names.video",
           "settings": {
-            "media_type_1": "video",
-            "video_1": "shopify://files/videos/CORSO FINAL.mp4",
-            "content_direction": "column",
+            "source": "uploaded",
+            "video": "shopify://files/videos/0808 (4)(2).mov",
+            "video_autoplay": true,
+            "video_loop": true,
+            "alt": "",
+            "custom_width": 100,
+            "custom_width_mobile": 100,
+            "aspect_ratio": "16/9",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "group_UhkqFF": {
+          "type": "group",
+          "name": "t:names.caption",
+          "settings": {
+            "content_direction": "row",
             "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
+            "horizontal_alignment": "space-between",
+            "vertical_alignment": "flex-end",
+            "align_baseline": true,
+            "horizontal_alignment_flex_direction_column": "flex-start",
             "vertical_alignment_flex_direction_column": "center",
             "gap": 12,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "background_media": "none",
             "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
             "toggle_overlay": false,
             "overlay_color": "#00000026",
             "overlay_style": "solid",
             "gradient_direction": "to top",
-            "padding-block-start": 48,
-            "padding-block-end": 48,
-            "padding-inline-start": 48,
-            "padding-inline-end": 48
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
           },
-          "blocks": {}
+          "blocks": {
+            "button_bLfiCa": {
+              "type": "button",
+              "name": "t:names.button",
+              "settings": {
+                "label": "Discover the collection",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button-unstyled",
+                "custom_button_background": "#000000",
+                "custom_button_text": "#ffffff",
+                "custom_button_border": "#ffffff",
+                "link_text_color": "",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "button_bLfiCa"
+          ]
         }
       },
       "block_order": [
-        "slide_QknTdR"
+        "video_mNzQVR",
+        "group_UhkqFF"
       ],
-      "name": "t:names.slideshow_full_frame",
+      "name": "t:names.video_section",
       "settings": {
-        "display_mode": "full_frame",
-        "section_width": "full-width",
-        "full_frame_on_mobile": false,
-        "slideshow_gap": 12,
-        "corner_radius": 0,
-        "slide_height": "medium",
-        "content_position": "on-media",
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 16,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
         "background_color": "",
-        "icons_style": "arrows_large",
-        "icons_shape": "none",
-        "slideshow_controls_style": "dots",
-        "autoplay": false,
-        "autoplay_speed": 4,
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 32,
+        "padding-block-end": 32
       }
     }
   },
@@ -939,6 +1014,6 @@
     "slideshow_Xzmwhb",
     "section_BkdmxX",
     "media_with_content_HP7Qpp",
-    "slideshow_Fi8pxM"
+    "section_LV4TVR"
   ]
 }
