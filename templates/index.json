@@ -871,9 +871,9 @@
       },
       "name": "t:names.media_with_text",
       "settings": {
-        "media_position": "right",
+        "media_position": "left",
         "media_width": "narrow",
-        "media_height": "80svh",
+        "media_height": "60svh",
         "section_width": "page-width",
         "extend_media": true,
         "background_color": "#ffffff",
