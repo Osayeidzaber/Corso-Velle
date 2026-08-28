@@ -270,7 +270,7 @@
           "name": "t:names.video",
           "settings": {
             "source": "uploaded",
-            "video": "shopify://files/videos/reel02T 2.MOV",
+            "video": "shopify://files/videos/0814.mov",
             "video_autoplay": true,
             "video_loop": true,
             "alt": "",
