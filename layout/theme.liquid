@@ -148,35 +148,88 @@
     <script src="{{ 'scroll-reveal.js' | asset_url }}" defer="defer"></script>
     <script>
       (function () {
-        function playAllVideos() {
-          document.querySelectorAll('video').forEach(function (v) {
-            v.muted = true;
-            v.defaultMuted = true;
-            v.playsInline = true;
-            v.controls = false;
-            v.setAttribute('playsinline', '');
-            v.setAttribute('webkit-playsinline', '');
-            v.setAttribute('muted', '');
-            v.setAttribute('autoplay', '');
-            v.setAttribute('loop', '');
-            var p = v.play();
-            if (p !== undefined) {
-              p.catch(function () {
-                var resume = function () { v.play(); };
-                window.addEventListener('touchstart', resume, { once: true, passive: true });
-                window.addEventListener('touchend', resume, { once: true, passive: true });
-                window.addEventListener('click', resume, { once: true, passive: true });
-                window.addEventListener('scroll', resume, { once: true, passive: true });
+        function prepareAndPlay(video) {
+          if (!video) return;
+          video.muted = true;
+          video.defaultMuted = true;
+          video.playsInline = true;
+          video.controls = false;
+          video.setAttribute('muted', '');
+          video.setAttribute('autoplay', '');
+          video.setAttribute('loop', '');
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
+          video.setAttribute('x5-playsinline', '');
+
+          // Check if the video is actually visible on the screen
+          var style = window.getComputedStyle(video);
+          if (style.display === 'none' || style.visibility === 'hidden') return;
+
+          if (video.paused) {
+            var playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(function () {
+                // Autoplay blocked by browser policy; will automatically start on user interaction
               });
             }
-          });
+          }
         }
+
+        function playAllVisibleVideos() {
+          document.querySelectorAll('video').forEach(prepareAndPlay);
+        }
+
+        // 1. Run immediately and on DOM readiness
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', playAllVideos);
+          document.addEventListener('DOMContentLoaded', playAllVisibleVideos);
         } else {
-          playAllVideos();
+          playAllVisibleVideos();
         }
-        window.addEventListener('load', playAllVideos);
+        window.addEventListener('load', playAllVisibleVideos);
+
+        // 2. IntersectionObserver to play videos as they scroll into view
+        if ('IntersectionObserver' in window) {
+          var videoObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                prepareAndPlay(entry.target);
+              }
+            });
+          }, { threshold: 0.05 });
+
+          document.querySelectorAll('video').forEach(function (v) {
+            videoObserver.observe(v);
+          });
+
+          // Watch dynamically inserted videos
+          if ('MutationObserver' in window) {
+            var mutObserver = new MutationObserver(function (mutations) {
+              mutations.forEach(function (mut) {
+                mut.addedNodes.forEach(function (node) {
+                  if (node.nodeType === 1) {
+                    if (node.tagName === 'VIDEO') {
+                      videoObserver.observe(node);
+                      prepareAndPlay(node);
+                    }
+                    if (node.querySelectorAll) {
+                      node.querySelectorAll('video').forEach(function (v) {
+                        videoObserver.observe(v);
+                        prepareAndPlay(v);
+                      });
+                    }
+                  }
+                });
+              });
+            });
+            mutObserver.observe(document.documentElement, { childList: true, subtree: true });
+          }
+        }
+
+        // 3. User interaction listener (guarantees playback on iOS / Android low power mode or strict policies)
+        var triggerEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll', 'visibilitychange', 'pageshow'];
+        triggerEvents.forEach(function (evt) {
+          window.addEventListener(evt, playAllVisibleVideos, { passive: true });
+        });
       })();
     </script>
   </body>
