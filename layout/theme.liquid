@@ -148,94 +148,61 @@
     <script src="{{ 'scroll-reveal.js' | asset_url }}" defer="defer"></script>
     <script>
       (function () {
-        function prepareAndPlay(video) {
+        function forcePlay(video) {
           if (!video) return;
           video.muted = true;
           video.defaultMuted = true;
           video.playsInline = true;
-          video.controls = false;
           video.setAttribute('muted', '');
           video.setAttribute('autoplay', '');
           video.setAttribute('loop', '');
           video.setAttribute('playsinline', '');
           video.setAttribute('webkit-playsinline', '');
           video.setAttribute('x5-playsinline', '');
-          video.setAttribute('preload', 'auto');
-
-          // Trigger early buffer preload if not already started
-          if (video.readyState === 0) {
-            try { video.load(); } catch (e) {}
-          }
-
-          // Check if the video is actually visible on the screen
-          var style = window.getComputedStyle(video);
-          if (style.display === 'none' || style.visibility === 'hidden') return;
 
           if (video.paused) {
-            var playPromise = video.play();
-            if (playPromise !== undefined) {
-              playPromise.catch(function () {
-                // Autoplay blocked by browser policy; will automatically start on user interaction
-              });
+            var p = video.play();
+            if (p !== undefined) {
+              p.catch(function () {});
             }
           }
         }
 
-        function playAllVisibleVideos() {
-          document.querySelectorAll('video').forEach(prepareAndPlay);
+        function playAll() {
+          document.querySelectorAll('video').forEach(forcePlay);
         }
 
-        // 1. Run immediately and on DOM readiness
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', playAllVisibleVideos);
+          document.addEventListener('DOMContentLoaded', playAll);
         } else {
-          playAllVisibleVideos();
+          playAll();
         }
-        window.addEventListener('load', playAllVisibleVideos);
+        window.addEventListener('load', playAll);
+        window.addEventListener('pageshow', playAll);
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) playAll();
+        });
 
-        // 2. IntersectionObserver to play videos as they scroll into view
+        // Mobile touch gestures: any touch / swipe / tap immediately triggers video playback
+        var touchEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll'];
+        touchEvents.forEach(function (evt) {
+          window.addEventListener(evt, playAll, { passive: true, capture: true });
+        });
+
+        // IntersectionObserver: when video is in viewport, trigger play
         if ('IntersectionObserver' in window) {
-          var videoObserver = new IntersectionObserver(function (entries) {
+          var obs = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
               if (entry.isIntersecting) {
-                prepareAndPlay(entry.target);
+                forcePlay(entry.target);
               }
             });
-          }, { threshold: 0.05 });
+          }, { threshold: 0.01 });
 
           document.querySelectorAll('video').forEach(function (v) {
-            videoObserver.observe(v);
+            obs.observe(v);
           });
-
-          // Watch dynamically inserted videos
-          if ('MutationObserver' in window) {
-            var mutObserver = new MutationObserver(function (mutations) {
-              mutations.forEach(function (mut) {
-                mut.addedNodes.forEach(function (node) {
-                  if (node.nodeType === 1) {
-                    if (node.tagName === 'VIDEO') {
-                      videoObserver.observe(node);
-                      prepareAndPlay(node);
-                    }
-                    if (node.querySelectorAll) {
-                      node.querySelectorAll('video').forEach(function (v) {
-                        videoObserver.observe(v);
-                        prepareAndPlay(v);
-                      });
-                    }
-                  }
-                });
-              });
-            });
-            mutObserver.observe(document.documentElement, { childList: true, subtree: true });
-          }
         }
-
-        // 3. User interaction listener (guarantees playback on iOS / Android low power mode or strict policies)
-        var triggerEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll', 'visibilitychange', 'pageshow'];
-        triggerEvents.forEach(function (evt) {
-          window.addEventListener(evt, playAllVisibleVideos, { passive: true });
-        });
       })();
     </script>
   </body>

@@ -143,28 +143,10 @@
   {%- endif -%}
 
   {%- if media_1 == 'video' -%}
-    {%- assign mp4_sources = section.settings.video_1.sources | where: 'format', 'mp4' -%}
-    {%- assign source_720 = mp4_sources | where: 'height', 720 | first -%}
-    {%- assign source_1080 = mp4_sources | where: 'height', 1080 | first -%}
-    {%- assign primary_source = source_720 | default: source_1080 | default: mp4_sources.first | default: section.settings.video_1.sources.first -%}
     <div class="{{ media_wrapper_desktop_class }}">
-      <video
-        class="hero__media"
-        data-testid="hero-desktop-video-1"
-        autoplay
-        loop
-        muted
-        playsinline
-        webkit-playsinline
-        x5-playsinline
-        preload="auto"
-        disablepictureinpicture
-      >
-        {%- if primary_source != blank -%}
-          <source src="{{ primary_source.url }}" type="{{ primary_source.mime_type }}">
-        {%- endif -%}
+      <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
         {%- for source in section.settings.video_1.sources -%}
-          {%- if source.url != primary_source.url -%}
+          {%- if source.format == 'mp4' -%}
             <source src="{{ source.url }}" type="{{ source.mime_type }}">
           {%- endif -%}
         {%- endfor -%}
@@ -193,28 +175,10 @@
     {%- endif -%}
 
     {%- if media_1_mobile == 'video' -%}
-      {%- assign mp4_sources_mobile = section.settings.video_1_mobile.sources | where: 'format', 'mp4' -%}
-      {%- assign source_mobile_720 = mp4_sources_mobile | where: 'height', 720 | first -%}
-      {%- assign source_mobile_480 = mp4_sources_mobile | where: 'height', 480 | first -%}
-      {%- assign primary_mobile_source = source_mobile_720 | default: source_mobile_480 | default: mp4_sources_mobile.first | default: section.settings.video_1_mobile.sources.first -%}
       <div class="{{ media_wrapper_mobile_class }}">
-        <video
-          class="hero__media"
-          data-testid="hero-mobile-video-1"
-          autoplay
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          x5-playsinline
-          preload="auto"
-          disablepictureinpicture
-        >
-          {%- if primary_mobile_source != blank -%}
-            <source src="{{ primary_mobile_source.url }}" type="{{ primary_mobile_source.mime_type }}">
-          {%- endif -%}
+        <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
           {%- for source in section.settings.video_1_mobile.sources -%}
-            {%- if source.url != primary_mobile_source.url -%}
+            {%- if source.format == 'mp4' -%}
               <source src="{{ source.url }}" type="{{ source.mime_type }}">
             {%- endif -%}
           {%- endfor -%}
@@ -244,28 +208,10 @@
   {%- endif -%}
 
   {%- if media_2 == 'video' -%}
-    {%- assign mp4_sources_2 = section.settings.video_2.sources | where: 'format', 'mp4' -%}
-    {%- assign source_2_720 = mp4_sources_2 | where: 'height', 720 | first -%}
-    {%- assign source_2_1080 = mp4_sources_2 | where: 'height', 1080 | first -%}
-    {%- assign primary_source_2 = source_2_720 | default: source_2_1080 | default: mp4_sources_2.first | default: section.settings.video_2.sources.first -%}
     <div class="{{ media_wrapper_desktop_class }}">
-      <video
-        class="hero__media"
-        data-testid="hero-desktop-video-2"
-        autoplay
-        loop
-        muted
-        playsinline
-        webkit-playsinline
-        x5-playsinline
-        preload="auto"
-        disablepictureinpicture
-      >
-        {%- if primary_source_2 != blank -%}
-          <source src="{{ primary_source_2.url }}" type="{{ primary_source_2.mime_type }}">
-        {%- endif -%}
+      <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
         {%- for source in section.settings.video_2.sources -%}
-          {%- if source.url != primary_source_2.url -%}
+          {%- if source.format == 'mp4' -%}
             <source src="{{ source.url }}" type="{{ source.mime_type }}">
           {%- endif -%}
         {%- endfor -%}
@@ -294,28 +240,10 @@
     {%- endif -%}
 
     {%- if media_2_mobile == 'video' -%}
-      {%- assign mp4_sources_2_mobile = section.settings.video_2_mobile.sources | where: 'format', 'mp4' -%}
-      {%- assign source_2_m_720 = mp4_sources_2_mobile | where: 'height', 720 | first -%}
-      {%- assign source_2_m_480 = mp4_sources_2_mobile | where: 'height', 480 | first -%}
-      {%- assign primary_source_2_mobile = source_2_m_720 | default: source_2_m_480 | default: mp4_sources_2_mobile.first | default: section.settings.video_2_mobile.sources.first -%}
       <div class="{{ media_wrapper_mobile_class }}">
-        <video
-          class="hero__media"
-          data-testid="hero-mobile-video-2"
-          autoplay
-          loop
-          muted
-          playsinline
-          webkit-playsinline
-          x5-playsinline
-          preload="auto"
-          disablepictureinpicture
-        >
-          {%- if primary_source_2_mobile != blank -%}
-            <source src="{{ primary_source_2_mobile.url }}" type="{{ primary_source_2_mobile.mime_type }}">
-          {%- endif -%}
+        <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
           {%- for source in section.settings.video_2_mobile.sources -%}
-            {%- if source.url != primary_source_2_mobile.url -%}
+            {%- if source.format == 'mp4' -%}
               <source src="{{ source.url }}" type="{{ source.mime_type }}">
             {%- endif -%}
           {%- endfor -%}
@@ -487,10 +415,8 @@
       {% if m3_desktop %}
         <div class="hero__media-wrapper hero__media-wrapper--desktop {% if m3_mobile == false %}hero__media-wrapper--mobile{% endif %}">
           {% if m3_type == 'video' %}
-            {%- assign mp4_3 = section.settings.video_3.sources | where: 'format', 'mp4' -%}
-            {%- assign opt_3 = mp4_3 | where: 'height', 1080 | first | default: mp4_3.first | default: section.settings.video_3.sources.first -%}
-            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture {% if opt_3 != blank %}src="{{ opt_3.url }}"{% endif %}>
-              {%- for src in section.settings.video_3.sources -%}<source src="{{ src.url }}" type="{{ src.mime_type }}">{%- endfor -%}
+            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
+              {%- for source in section.settings.video_3.sources -%}{%- if source.format == 'mp4' -%}<source src="{{ source.url }}" type="{{ source.mime_type }}">{%- endif -%}{%- endfor -%}
             </video>
           {% else %}
             {{ section.settings.image_3 | image_url: width: 3840 | image_tag: width: section.settings.image_3.width, height: section.settings.image_3.height, alt: section.settings.image_3.alt, class: 'hero__media' }}
@@ -500,10 +426,8 @@
       {% if m3_mobile %}
         <div class="hero__media-wrapper hero__media-wrapper--mobile">
           {% if m3_mobile_type == 'video' %}
-            {%- assign mp4_3_m = section.settings.video_3_mobile.sources | where: 'format', 'mp4' -%}
-            {%- assign opt_3_m = mp4_3_m | where: 'height', 720 | first | default: mp4_3_m.first | default: section.settings.video_3_mobile.sources.first -%}
-            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture {% if opt_3_m != blank %}src="{{ opt_3_m.url }}"{% endif %}>
-              {%- for src in section.settings.video_3_mobile.sources -%}<source src="{{ src.url }}" type="{{ src.mime_type }}">{%- endfor -%}
+            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
+              {%- for source in section.settings.video_3_mobile.sources -%}{%- if source.format == 'mp4' -%}<source src="{{ source.url }}" type="{{ source.mime_type }}">{%- endif -%}{%- endfor -%}
             </video>
           {% else %}
             {{ section.settings.image_3_mobile | image_url: width: 1600 | image_tag: width: section.settings.image_3_mobile.width, height: section.settings.image_3_mobile.height, alt: section.settings.image_3_mobile.alt, class: 'hero__media' }}
@@ -537,10 +461,8 @@
       {% if m4_desktop %}
         <div class="hero__media-wrapper hero__media-wrapper--desktop {% if m4_mobile == false %}hero__media-wrapper--mobile{% endif %}">
           {% if m4_type == 'video' %}
-            {%- assign mp4_4 = section.settings.video_4.sources | where: 'format', 'mp4' -%}
-            {%- assign opt_4 = mp4_4 | where: 'height', 1080 | first | default: mp4_4.first | default: section.settings.video_4.sources.first -%}
-            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture {% if opt_4 != blank %}src="{{ opt_4.url }}"{% endif %}>
-              {%- for src in section.settings.video_4.sources -%}<source src="{{ src.url }}" type="{{ src.mime_type }}">{%- endfor -%}
+            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
+              {%- for source in section.settings.video_4.sources -%}{%- if source.format == 'mp4' -%}<source src="{{ source.url }}" type="{{ source.mime_type }}">{%- endif -%}{%- endfor -%}
             </video>
           {% else %}
             {{ section.settings.image_4 | image_url: width: 3840 | image_tag: width: section.settings.image_4.width, height: section.settings.image_4.height, alt: section.settings.image_4.alt, class: 'hero__media' }}
@@ -550,10 +472,8 @@
       {% if m4_mobile %}
         <div class="hero__media-wrapper hero__media-wrapper--mobile">
           {% if m4_mobile_type == 'video' %}
-            {%- assign mp4_4_m = section.settings.video_4_mobile.sources | where: 'format', 'mp4' -%}
-            {%- assign opt_4_m = mp4_4_m | where: 'height', 720 | first | default: mp4_4_m.first | default: section.settings.video_4_mobile.sources.first -%}
-            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline preload="auto" disablepictureinpicture {% if opt_4_m != blank %}src="{{ opt_4_m.url }}"{% endif %}>
-              {%- for src in section.settings.video_4_mobile.sources -%}<source src="{{ src.url }}" type="{{ src.mime_type }}">{%- endfor -%}
+            <video class="hero__media" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
+              {%- for source in section.settings.video_4_mobile.sources -%}{%- if source.format == 'mp4' -%}<source src="{{ source.url }}" type="{{ source.mime_type }}">{%- endif -%}{%- endfor -%}
             </video>
           {% else %}
             {{ section.settings.image_4_mobile | image_url: width: 1600 | image_tag: width: section.settings.image_4_mobile.width, height: section.settings.image_4_mobile.height, alt: section.settings.image_4_mobile.alt, class: 'hero__media' }}

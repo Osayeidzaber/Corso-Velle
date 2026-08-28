@@ -7,28 +7,10 @@
 {%- assign featured_video = product_videos.first -%}
 
 {%- if featured_video != blank -%}
-  {%- assign mp4_sources = featured_video.sources | where: 'format', 'mp4' -%}
-  {%- assign source_720 = mp4_sources | where: 'height', 720 | first -%}
-  {%- assign source_1080 = mp4_sources | where: 'height', 1080 | first -%}
-  {%- assign primary_source = source_720 | default: source_1080 | default: mp4_sources.first | default: featured_video.sources.first -%}
-
   <div class="product-standalone-video" data-standalone-video>
-    <video
-      class="product-standalone-video__player"
-      autoplay
-      loop
-      muted
-      playsinline
-      webkit-playsinline
-      x5-playsinline
-      preload="auto"
-      disablepictureinpicture
-    >
-      {%- if primary_source != blank -%}
-        <source src="{{ primary_source.url }}" type="{{ primary_source.mime_type }}">
-      {%- endif -%}
+    <video class="product-standalone-video__player" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
       {%- for source in featured_video.sources -%}
-        {%- if source.url != primary_source.url -%}
+        {%- if source.format == 'mp4' -%}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
         {%- endif -%}
       {%- endfor -%}
