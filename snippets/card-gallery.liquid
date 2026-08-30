@@ -233,13 +233,18 @@
           class="card-gallery__hover-video-media"
           playsinline
           webkit-playsinline
+          x5-playsinline
           muted
           loop
-          preload="auto"
-          {% if optimal_source != blank %}src="{{ optimal_source.url }}"{% endif %}
+          preload="none"
         >
+          {%- if optimal_source != blank -%}
+            <source src="{{ optimal_source.url }}" type="{{ optimal_source.mime_type }}">
+          {%- endif -%}
           {%- for source in hover_video.sources -%}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- if source.format == 'mp4' and source.url != optimal_source.url -%}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- endif -%}
           {%- endfor -%}
         </video>
       </div>

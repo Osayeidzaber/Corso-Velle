@@ -114,13 +114,13 @@
         | external_video_tag: data-video-type: 'vimeo'
       }}
     {% else %}
-      <video class="hero__media" autoplay loop="{{ video_loop }}" muted playsinline webkit-playsinline x5-playsinline preload="auto" {% if controls %}controls{% endif %} disablepictureinpicture>
+      <auto-video>
         {%- for source in video.sources -%}
           {%- if source.format == 'mp4' -%}
             <source src="{{ source.url }}" type="{{ source.mime_type }}">
           {%- endif -%}
         {%- endfor -%}
-      </video>
+      </auto-video>
     {% endif %}
   {% endcapture %}
 {% endif %}

@@ -24,6 +24,11 @@ export class VideoBackgroundComponent extends Component {
     }
 
     videoElement.load();
+    videoElement.muted = true;
+    videoElement.defaultMuted = true;
+    videoElement.playsInline = true;
+    var p = videoElement.play();
+    if (p && typeof p.catch === 'function') { p.catch(function() {}); }
   }
 }
 

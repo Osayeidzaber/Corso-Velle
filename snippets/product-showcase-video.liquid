@@ -8,30 +8,13 @@
 
 {%- if featured_video != blank -%}
   <div class="product-standalone-video" data-standalone-video>
-    <video class="product-standalone-video__player" autoplay loop muted playsinline webkit-playsinline x5-playsinline preload="auto" disablepictureinpicture>
+    <auto-video class="product-standalone-video__player">
       {%- for source in featured_video.sources -%}
         {%- if source.format == 'mp4' -%}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
         {%- endif -%}
       {%- endfor -%}
-    </video>
-    <script>
-      (function() {
-        var v = document.currentScript.previousElementSibling;
-        if (v && v.tagName === 'VIDEO') {
-          v.muted = true;
-          v.defaultMuted = true;
-          v.playsInline = true;
-          var p = v.play();
-          if (p !== undefined) {
-            p.catch(function() {
-              window.addEventListener('touchstart', function() { v.play(); }, { once: true, passive: true });
-              window.addEventListener('scroll', function() { v.play(); }, { once: true, passive: true });
-            });
-          }
-        }
-      })();
-    </script>
+    </auto-video>
   </div>
 {%- endif -%}
 

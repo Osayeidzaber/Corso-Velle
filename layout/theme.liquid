@@ -48,6 +48,7 @@
     {% endif %}
 
     {{ content_for_header }}
+    <script src="{{ 'auto-video.js' | asset_url }}" defer></script>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
@@ -146,64 +147,5 @@
     {% endif %}
 
     <script src="{{ 'scroll-reveal.js' | asset_url }}" defer="defer"></script>
-    <script>
-      (function () {
-        function forcePlay(video) {
-          if (!video) return;
-          video.muted = true;
-          video.defaultMuted = true;
-          video.playsInline = true;
-          video.setAttribute('muted', '');
-          video.setAttribute('autoplay', '');
-          video.setAttribute('loop', '');
-          video.setAttribute('playsinline', '');
-          video.setAttribute('webkit-playsinline', '');
-          video.setAttribute('x5-playsinline', '');
-
-          if (video.paused) {
-            var p = video.play();
-            if (p !== undefined) {
-              p.catch(function () {});
-            }
-          }
-        }
-
-        function playAll() {
-          document.querySelectorAll('video').forEach(forcePlay);
-        }
-
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', playAll);
-        } else {
-          playAll();
-        }
-        window.addEventListener('load', playAll);
-        window.addEventListener('pageshow', playAll);
-        document.addEventListener('visibilitychange', function () {
-          if (!document.hidden) playAll();
-        });
-
-        // Mobile touch gestures: any touch / swipe / tap immediately triggers video playback
-        var touchEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll'];
-        touchEvents.forEach(function (evt) {
-          window.addEventListener(evt, playAll, { passive: true, capture: true });
-        });
-
-        // IntersectionObserver: when video is in viewport, trigger play
-        if ('IntersectionObserver' in window) {
-          var obs = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                forcePlay(entry.target);
-              }
-            });
-          }, { threshold: 0.01 });
-
-          document.querySelectorAll('video').forEach(function (v) {
-            obs.observe(v);
-          });
-        }
-      })();
-    </script>
   </body>
 </html>
