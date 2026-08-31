@@ -144,7 +144,7 @@
 
   {%- if media_1 == 'video' -%}
     <div class="{{ media_wrapper_desktop_class }}">
-      {{ section.settings.video_1 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+      {{ section.settings.video_1 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '2000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
     </div>
   {%- endif -%}
 
@@ -170,7 +170,7 @@
 
     {%- if media_1_mobile == 'video' -%}
       <div class="{{ media_wrapper_mobile_class }}">
-        {{ section.settings.video_1_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+        {{ section.settings.video_1_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
       </div>
     {%- endif -%}
   {%- endif -%}
@@ -197,7 +197,7 @@
 
   {%- if media_2 == 'video' -%}
     <div class="{{ media_wrapper_desktop_class }}">
-      {{ section.settings.video_2 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+      {{ section.settings.video_2 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '2000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
     </div>
   {%- endif -%}
 
@@ -223,7 +223,7 @@
 
     {%- if media_2_mobile == 'video' -%}
       <div class="{{ media_wrapper_mobile_class }}">
-        {{ section.settings.video_2_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+        {{ section.settings.video_2_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
       </div>
     {%- endif -%}
   {%- endif -%}
@@ -391,7 +391,7 @@
       {% if m3_desktop %}
         <div class="hero__media-wrapper hero__media-wrapper--desktop {% if m3_mobile == false %}hero__media-wrapper--mobile{% endif %}">
           {% if m3_type == 'video' %}
-            {{ section.settings.video_3 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+            {{ section.settings.video_3 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '2000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
           {% else %}
             {{ section.settings.image_3 | image_url: width: 3840 | image_tag: width: section.settings.image_3.width, height: section.settings.image_3.height, alt: section.settings.image_3.alt, class: 'hero__media' }}
           {% endif %}
@@ -400,7 +400,7 @@
       {% if m3_mobile %}
         <div class="hero__media-wrapper hero__media-wrapper--mobile">
           {% if m3_mobile_type == 'video' %}
-            {{ section.settings.video_3_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+            {{ section.settings.video_3_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
           {% else %}
             {{ section.settings.image_3_mobile | image_url: width: 1600 | image_tag: width: section.settings.image_3_mobile.width, height: section.settings.image_3_mobile.height, alt: section.settings.image_3_mobile.alt, class: 'hero__media' }}
           {% endif %}
@@ -433,7 +433,7 @@
       {% if m4_desktop %}
         <div class="hero__media-wrapper hero__media-wrapper--desktop {% if m4_mobile == false %}hero__media-wrapper--mobile{% endif %}">
           {% if m4_type == 'video' %}
-            {{ section.settings.video_4 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+            {{ section.settings.video_4 | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '2000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
           {% else %}
             {{ section.settings.image_4 | image_url: width: 3840 | image_tag: width: section.settings.image_4.width, height: section.settings.image_4.height, alt: section.settings.image_4.alt, class: 'hero__media' }}
           {% endif %}
@@ -442,7 +442,7 @@
       {% if m4_mobile %}
         <div class="hero__media-wrapper hero__media-wrapper--mobile">
           {% if m4_mobile_type == 'video' %}
-            {{ section.settings.video_4_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
+            {{ section.settings.video_4_mobile | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1000x', class: 'hero__media', style: 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' }}
           {% else %}
             {{ section.settings.image_4_mobile | image_url: width: 1600 | image_tag: width: section.settings.image_4_mobile.width, height: section.settings.image_4_mobile.height, alt: section.settings.image_4_mobile.alt, class: 'hero__media' }}
           {% endif %}
