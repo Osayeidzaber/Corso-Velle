@@ -289,19 +289,17 @@
     transition: opacity 0.35s ease;
   }
 
-  /* Optional native product video preview, shown only after hover playback starts. */
+  /* Optional native product video preview, shown on hover/touch playback */
   .card-gallery__hover-video {
     position: absolute;
     inset: 0;
     z-index: 5;
     overflow: hidden;
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
     border-radius: inherit;
     background: transparent;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    will-change: opacity, transform;
+    transition: opacity 0.3s ease;
   }
 
   .card-gallery__hover-video-media,
@@ -312,25 +310,20 @@
     object-fit: cover;
   }
 
-  /* JS-driven hover video visibility (works on both desktop and touch devices) */
+  /* Unconditionally reveal video whenever playing or hovered */
   .card-gallery__hover-video.is-playing,
   .card-gallery.is-hover-video-playing .card-gallery__hover-video,
-  .product-card.is-hover-video-playing .card-gallery__hover-video {
+  .product-card.is-hover-video-playing .card-gallery__hover-video,
+  product-card.is-hover-video-playing .card-gallery__hover-video,
+  .card-gallery:hover .card-gallery__hover-video,
+  .product-card:hover .card-gallery__hover-video,
+  product-card:hover .card-gallery__hover-video,
+  .resource-list__item:hover .card-gallery__hover-video,
+  .resource-list__slide:hover .card-gallery__hover-video,
+  .resource-list__marquee-item:hover .card-gallery__hover-video {
     opacity: 1 !important;
     visibility: visible !important;
     z-index: 100 !important;
-  }
-
-  /* CSS :hover visibility — only on devices with a real pointer (not touch) */
-  @media (hover: hover) {
-    .card-gallery:hover .card-gallery__hover-video,
-    .product-card:hover .card-gallery__hover-video,
-    .resource-list__slide:hover .card-gallery__hover-video,
-    .resource-list__marquee-item:hover .card-gallery__hover-video {
-      opacity: 1 !important;
-      visibility: visible !important;
-      z-index: 100 !important;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
