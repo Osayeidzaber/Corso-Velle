@@ -496,43 +496,7 @@ export class ProductCard extends ProductCardLink {
       video.load();
     }
 
-    let isPlaying = false;
-
-    const playVideo = () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      if (isPlaying) return;
-
-      isPlaying = true;
-      gallery.classList.add('is-hover-video-playing');
-      this.classList.add('is-hover-video-playing');
-
-      video.muted = true;
-      video.playsInline = true;
-
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          if (!isPlaying) {
-            gallery.classList.remove('is-hover-video-playing');
-            this.classList.remove('is-hover-video-playing');
-          }
-        });
-      }
-    };
-
-    const stopVideo = () => {
-      if (!isPlaying) return;
-      isPlaying = false;
-      gallery.classList.remove('is-hover-video-playing');
-      this.classList.remove('is-hover-video-playing');
-
-      video.pause();
-      try {
-        video.currentTime = 0;
-      } catch (e) {}
-    };
-
-    // ── Pre-warm video in background (buffers data so it starts instantly when hovered/touched) ──
+    // ── Pre-warm video data as card approaches viewport ──
     /** @type {IntersectionObserver | null} */
     let prewarmObserver = null;
     if ('IntersectionObserver' in window) {
@@ -542,18 +506,6 @@ export class ProductCard extends ProductCardLink {
             if (video.readyState === 0) {
               video.load();
             }
-            // Silently buffer first frame in background while hidden
-            if (video.readyState < 2) {
-              const p = video.play();
-              if (p !== undefined) {
-                p.then(() => {
-                  if (!isPlaying) {
-                    video.pause();
-                    try { video.currentTime = 0; } catch (_) {}
-                  }
-                }).catch(() => {});
-              }
-            }
             prewarmObserver?.disconnect();
             prewarmObserver = null;
           }
@@ -561,6 +513,62 @@ export class ProductCard extends ProductCardLink {
       }, { rootMargin: '400px' });
       prewarmObserver.observe(this);
     }
+
+    let isHoverActive = false;
+
+    const playVideo = () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      isHoverActive = true;
+
+      wrapper.classList.add('is-playing');
+      gallery.classList.add('is-hover-video-playing');
+      this.classList.add('is-hover-video-playing');
+
+      video.muted = true;
+      video.playsInline = true;
+
+      if (video.readyState === 0) {
+        video.load();
+      }
+
+      const startPlayback = () => {
+        if (!isHoverActive) return;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            // If aborted because user quickly left, that's normal
+            if (err.name !== 'AbortError' && isHoverActive) {
+              // Retry on interaction if browser policy blocked it
+              const retryOnce = () => {
+                if (isHoverActive) video.play().catch(() => {});
+              };
+              window.addEventListener('touchstart', retryOnce, { once: true, passive: true });
+              window.addEventListener('mousemove', retryOnce, { once: true, passive: true });
+            }
+          });
+        }
+      };
+
+      if (video.readyState >= 2) {
+        startPlayback();
+      } else {
+        video.addEventListener('canplay', startPlayback, { once: true });
+        video.addEventListener('loadeddata', startPlayback, { once: true });
+        startPlayback(); // Trigger anyway in case canplay was already fired
+      }
+    };
+
+    const stopVideo = () => {
+      isHoverActive = false;
+      wrapper.classList.remove('is-playing');
+      gallery.classList.remove('is-hover-video-playing');
+      this.classList.remove('is-hover-video-playing');
+
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch (e) {}
+    };
 
     // ── Interaction: Desktop Hover (mouse) ──
     const slideParent = this.closest('.resource-list__slide, .resource-list__marquee-item');
@@ -581,15 +589,15 @@ export class ProductCard extends ProductCardLink {
     this.addEventListener('pointerleave', handlePointerLeave);
     this.addEventListener('mouseenter', playVideo);
     this.addEventListener('mouseleave', stopVideo);
+    gallery.addEventListener('pointerenter', handlePointerEnter);
+    gallery.addEventListener('pointerleave', handlePointerLeave);
     if (slideParent) {
       slideParent.addEventListener('mouseenter', playVideo);
       slideParent.addEventListener('mouseleave', stopVideo);
     }
 
     // ── Interaction: Mobile / Touch (press, hold, tap) ──
-    // When touched on phone, triggers the hover animation & video playback
-    // and stays playing until touching another card or scrolling away.
-    const handleTouch = (e) => {
+    const handleTouch = () => {
       playVideo();
     };
 
@@ -606,7 +614,7 @@ export class ProductCard extends ProductCardLink {
     if ('IntersectionObserver' in window) {
       visibilityObserver = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting && isPlaying) {
+          if (!entry.isIntersecting && isHoverActive) {
             stopVideo();
           }
         }
@@ -619,6 +627,8 @@ export class ProductCard extends ProductCardLink {
       this.removeEventListener('pointerleave', handlePointerLeave);
       this.removeEventListener('mouseenter', playVideo);
       this.removeEventListener('mouseleave', stopVideo);
+      gallery.removeEventListener('pointerenter', handlePointerEnter);
+      gallery.removeEventListener('pointerleave', handlePointerLeave);
       this.removeEventListener('touchstart', handleTouch);
       if (slideParent) {
         slideParent.removeEventListener('mouseenter', playVideo);
