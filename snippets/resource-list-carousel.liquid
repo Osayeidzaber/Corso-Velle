@@ -22,10 +22,11 @@
     assign gutter_style = '--gutter-slide-width: 0px;'
   endif
 
-  assign show_arrows = false
-  if settings.icons_style != 'none'
-    assign show_arrows = true
+  assign carousel_autoplay = false
+  if settings.auto_rotate or settings.autoplay
+    assign carousel_autoplay = true
   endif
+  assign carousel_autoplay_speed = settings.auto_rotate_speed | default: settings.autoplay_speed | default: 5
 %}
 
 {% capture slides %}
@@ -47,9 +48,9 @@
     icon_style: settings.icons_style,
     icon_shape: settings.icons_shape,
     auto_hide_controls: false,
-    infinite: true,
-    autoplay: true,
-    autoplay_speed: 3000,
+    infinite: settings.infinite | default: false,
+    autoplay: carousel_autoplay,
+    autoplay_speed: carousel_autoplay_speed,
     initial_slide: 0,
     slide_count: slide_count,
     slideshow_gutters: slideshow_gutters

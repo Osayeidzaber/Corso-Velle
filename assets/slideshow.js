@@ -12,8 +12,8 @@ import {
 import { Scroller, scrollIntoView } from '@theme/scrolling';
 import { SlideshowSelectEvent } from '@theme/events';
 
-// The threshold for determining visibility of slides.
-const SLIDE_VISIBLITY_THRESHOLD = 0.7;
+// The threshold for determining visibility of slides (lowered for mobile carousel support).
+const SLIDE_VISIBLITY_THRESHOLD = 0.25;
 
 /**
  * Shared viewport observer manager for lazy scroll enablement.
@@ -556,6 +556,13 @@ export class Slideshow extends Component {
     });
 
     scroller.addEventListener('mousedown', this.#handleMouseDown);
+    scroller.addEventListener('touchstart', this.suspend, { passive: true });
+    scroller.addEventListener('touchend', () => {
+      setTimeout(() => this.resume(), 2000);
+    }, { passive: true });
+    scroller.addEventListener('touchcancel', () => {
+      setTimeout(() => this.resume(), 2000);
+    }, { passive: true });
 
     this.addEventListener('mouseenter', this.suspend);
     this.addEventListener('mouseleave', this.resume);
@@ -646,13 +653,29 @@ export class Slideshow extends Component {
    */
   #sync = () => {
     const { slides } = this;
-    if (!slides) return (this.current = 0);
+    if (!slides || !slides.length) return 0;
 
-    if (!this.#scroll) return (this.current = 0);
+    if (!this.#scroll) return this.current || 0;
 
     const visibleSlides = this.visibleSlides;
 
-    if (!visibleSlides.length) return this.current;
+    if (!visibleSlides.length) {
+      const { scroller } = this.refs;
+      if (scroller) {
+        const scrollLeft = scroller.scrollLeft;
+        let closestSlide = slides[0];
+        let minDiff = Infinity;
+        for (const slide of slides) {
+          const diff = Math.abs(slide.offsetLeft - scrollLeft);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestSlide = slide;
+          }
+        }
+        return (this.current = slides.indexOf(closestSlide));
+      }
+      return this.current || 0;
+    }
 
     const { axis } = this.#scroll;
     const { scroller } = this.refs;
@@ -661,7 +684,7 @@ export class Slideshow extends Component {
     const closestCenter = closest(centers, referencePoint);
     const closestVisibleSlide = visibleSlides[centers.indexOf(closestCenter)];
 
-    if (!closestVisibleSlide) return (this.current = 0);
+    if (!closestVisibleSlide) return this.current || 0;
 
     const index = slides.indexOf(closestVisibleSlide);
 
