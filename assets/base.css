@@ -2473,38 +2473,5 @@ video::-webkit-media-controls-enclosure {
   font-family: var(--font-heading--family, 'Newsreader', 'Inter', 'Helvetica Neue', Arial, serif);
 }
 
-/* ==========================================================================
-   Video Loading Skeleton & Shimmer Styles
-   ========================================================================== */
-@keyframes videoShimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
 
-.hero__media-wrapper:not(.is-video-loaded):has(video),
-.card-gallery__hover-video:not(.is-video-loaded),
-.video-skeleton-active {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
-  background-size: 200% 100%;
-  animation: videoShimmer 2s infinite ease-in-out;
-}
-
-.hero__media-wrapper video,
-.card-gallery__hover-video video {
-  transition: opacity 0.35s ease;
-}
-
-.hero__media-wrapper.is-video-loaded video,
-.card-gallery__hover-video.is-video-loaded video {
-  opacity: 1;
-}
 

@@ -1,8 +1,10 @@
 /**
  * video-loader.js
  * 
- * High-performance video loader and skeleton state manager for Shopify videos (.mov, .mp4, WebM, HLS).
- * Ensures instant first-frame painting, pre-buffering, and unbroken continuous autoplay on desktop and mobile.
+ * High-performance video loader and ARZ-style hover playback manager.
+ * Supports native Shopify video streams (.mov, .mp4, WebM, HLS).
+ * Ensures instant first-frame painting, pre-buffering, unbroken continuous autoplay,
+ * and immediate hover playback across product cards in grids, carousels, and marquees.
  */
 
 (function () {
@@ -44,7 +46,6 @@
     if (video.readyState >= 2) {
       markLoaded();
     } else {
-      if (wrapper) wrapper.classList.add('video-skeleton-active');
       video.addEventListener('loadeddata', markLoaded, { once: true });
       video.addEventListener('canplay', markLoaded, { once: true });
       video.addEventListener('playing', markLoaded, { once: true });
@@ -67,9 +68,12 @@
   }
 
   /**
-   * Scans and initializes all video elements currently in the DOM.
+   * Scans and initializes all video elements in the DOM.
+   * Hover-video playback for product cards is managed exclusively by
+   * ProductCard.#setupHoverVideo() in product-card.js to avoid duplicate
+   * event listeners and race conditions.
    */
-  function scanVideos() {
+  function scanMedia() {
     const videos = document.querySelectorAll('video');
     for (let i = 0; i < videos.length; i++) {
       initVideo(videos[i]);
@@ -78,26 +82,15 @@
 
   // Run on ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanVideos);
+    document.addEventListener('DOMContentLoaded', scanMedia);
   } else {
-    scanVideos();
+    scanMedia();
   }
 
-  // Observe dynamically added videos (e.g. infinite scroll, collection filters, quick view)
+  // Observe dynamically added videos and product cards
   if ('MutationObserver' in window) {
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof HTMLVideoElement) {
-            initVideo(node);
-          } else if (node instanceof HTMLElement) {
-            const nested = node.querySelectorAll('video');
-            for (let j = 0; j < nested.length; j++) {
-              initVideo(nested[j]);
-            }
-          }
-        }
-      }
+    const observer = new MutationObserver(() => {
+      scanMedia();
     });
 
     observer.observe(document.documentElement, {

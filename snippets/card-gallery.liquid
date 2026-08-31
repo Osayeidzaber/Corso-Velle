@@ -221,7 +221,7 @@
         aria-hidden="true"
       >
         {%- if hover_video.media_type == 'video' -%}
-          {{ hover_video | video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'card-gallery__hover-video-media' }}
+          {{ hover_video | video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata', class: 'card-gallery__hover-video-media' }}
         {%- else -%}
           {{ hover_video | external_video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, class: 'card-gallery__hover-video-media' }}
         {%- endif -%}
@@ -307,34 +307,41 @@
     object-fit: cover;
   }
 
+  /* JS-driven hover video visibility (works on both desktop and touch devices) */
+  .card-gallery__hover-video.is-playing,
   .card-gallery.is-hover-video-playing .card-gallery__hover-video,
-  .product-card.is-hover-video-playing .card-gallery__hover-video,
-  .product-card:hover .card-gallery__hover-video {
+  .product-card.is-hover-video-playing .card-gallery__hover-video {
     opacity: 1 !important;
     visibility: visible !important;
     z-index: 100 !important;
   }
 
-  .card-gallery.is-hover-video-playing slideshow-component,
-  .card-gallery.is-hover-video-playing a.contents > .product-media-container,
-  .product-card.is-hover-video-playing slideshow-component,
-  .product-card.is-hover-video-playing a.contents > .product-media-container {
-    opacity: 0;
+  /* CSS :hover visibility — only on devices with a real pointer (not touch) */
+  @media (hover: hover) {
+    .product-card:hover .card-gallery__hover-video,
+    .resource-list__slide:hover .card-gallery__hover-video,
+    .resource-list__marquee-item:hover .card-gallery__hover-video {
+      opacity: 1 !important;
+      visibility: visible !important;
+      z-index: 100 !important;
+    }
   }
 
-  @media (hover: none), (max-width: 749px), (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
     .card-gallery__hover-video {
       display: none !important;
     }
   }
 
-  .card-gallery:hover .product-media-container img,
-  .card-gallery:hover .product-media-container video,
-  .card-gallery:hover .card-gallery__hover-video-media,
-  .card-gallery:hover .card-gallery__hover-video video,
-  .product-card:hover .product-media-container img,
-  .product-card:hover .card-gallery__hover-video-media {
-    transform: scale(1.05);
+  @media (hover: hover) {
+    .card-gallery:hover .product-media-container img,
+    .card-gallery:hover .product-media-container video,
+    .card-gallery:hover .card-gallery__hover-video-media,
+    .card-gallery:hover .card-gallery__hover-video video,
+    .product-card:hover .product-media-container img,
+    .product-card:hover .card-gallery__hover-video-media {
+      transform: scale(1.05);
+    }
   }
 
 
