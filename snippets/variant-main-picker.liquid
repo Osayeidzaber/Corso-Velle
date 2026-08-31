@@ -574,6 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shouldUpdate) updateDisplayToSelected();
   });
   
-  observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['checked', 'data-current-checked'] });
+  // Scope observer to the size slider container only (not document.body) to prevent CPU thrashing
+  const sizeSliderContainer = document.querySelector('.size-slider-grid');
+  if (sizeSliderContainer) {
+    observer.observe(sizeSliderContainer, { attributes: true, subtree: true, attributeFilter: ['checked', 'data-current-checked'] });
+  }
 });
 </script>

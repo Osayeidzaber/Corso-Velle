@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.title",
           "settings": {
-            "text": "<h1>Timesless Basics '26</h1>",
+            "text": "<h1>{{ collection.title }}</h1>",
             "width": "100%",
             "max_width": "normal",
             "alignment": "left",
@@ -80,14 +80,14 @@
           "type": "filters",
           "static": true,
           "settings": {
-            "enable_filtering": false,
-            "filter_style": "vertical",
+            "enable_filtering": true,
+            "filter_style": "horizontal",
             "filter_width": "centered",
             "text_label_case": "default",
             "show_swatch_label": false,
             "show_filter_label": false,
-            "enable_sorting": false,
-            "enable_grid_density": false,
+            "enable_sorting": true,
+            "enable_grid_density": true,
             "background_color": "",
             "text_color": "",
             "padding-block-start": 8,
@@ -219,7 +219,6 @@
                 },
                 "swatches": {
                   "type": "swatches",
-                  "disabled": true,
                   "settings": {
                     "product_swatches_alignment": "flex-start",
                     "product_swatches_alignment_mobile": "flex-start",

@@ -470,52 +470,16 @@
     if (form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        const variantId = variantIdInput ? variantIdInput.value : '{{ product.selected_or_first_available_variant.id }}';
-        if (!variantId) return;
-
-        if (ctaButton) ctaButton.disabled = true;
-        const ctaText = ctaButton ? ctaButton.querySelector('.cta-text') : null;
-        if (ctaText) ctaText.textContent = 'Adding...';
-
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            items: [{
-              id: parseInt(variantId),
-              quantity: 1
-            }]
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (ctaButton) ctaButton.disabled = false;
-          if (ctaText) ctaText.textContent = 'Added to Cart!';
-          setTimeout(() => {
-            if (ctaText) ctaText.textContent = 'Add to Cart';
-          }, 2000);
-
-          // Dispatch cart refresh and open events
-          document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-          document.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
-
-          const cartDrawer = document.querySelector('cart-drawer-component, cart-drawer, #CartDrawer');
-          if (cartDrawer && typeof cartDrawer.open === 'function') {
-            cartDrawer.open();
-          } else if (cartDrawer && typeof cartDrawer.show === 'function') {
-            cartDrawer.show();
-          } else {
-            window.location.href = '/cart';
-          }
-        })
-        .catch(err => {
-          console.error('Add to cart error:', err);
-          if (ctaButton) ctaButton.disabled = false;
-          if (ctaText) ctaText.textContent = 'Add to Cart';
-        });
+        // Delegate to the main product form's add-to-cart button instead of
+        // maintaining a competing standalone form. This ensures all validations,
+        // gift card forms, and quantity checks run through the unified product-form.js path.
+        const mainAddToCartBtn = document.querySelector('add-to-cart-component button[type="submit"], product-form-component button[type="submit"]');
+        if (mainAddToCartBtn) {
+          mainAddToCartBtn.click();
+        } else {
+          // Fallback: redirect to cart if main form button not found
+          window.location.href = '/cart';
+        }
       });
     }
   });

@@ -12,28 +12,6 @@
     "main": {
       "type": "product-information",
       "blocks": {
-        "accordion_KKYeie": {
-          "type": "accordion",
-          "name": "t:names.accordion",
-          "settings": {
-            "icon": "caret",
-            "dividers": true,
-            "divider_color": "",
-            "type_preset": "h6",
-            "background_color": "",
-            "text_color": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
@@ -330,9 +308,7 @@
           ]
         }
       },
-      "block_order": [
-        "accordion_KKYeie"
-      ],
+      "block_order": [],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",

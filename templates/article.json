@@ -41,7 +41,7 @@
           "name": "t:names.details",
           "settings": {
             "show_date": true,
-            "show_author": false,
+            "show_author": true,
             "alignment": "center",
             "show_alignment": true,
             "padding-block-start": 0,

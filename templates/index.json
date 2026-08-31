@@ -773,7 +773,7 @@
               "type": "text",
               "name": "t:names.heading",
               "settings": {
-                "text": "<h1>Timeless Basics '26</h1>",
+                "text": "<h2>Timeless Basics '26</h2>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
@@ -989,7 +989,6 @@
     "hero_G7CAX9",
     "product_list_YidTcf",
     "slideshow_Xzmwhb",
-    "section_BkdmxX",
     "media_with_content_HP7Qpp",
     "section_LV4TVR"
   ]
