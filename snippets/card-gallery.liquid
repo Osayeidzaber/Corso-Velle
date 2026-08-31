@@ -13,13 +13,11 @@
   assign block_settings = block.settings
   assign image_sizes = '(min-width: 750px) 50vw, 100vw'
 
-  # Use the first native Shopify video as the optional hover preview.
-  # External videos are intentionally skipped because iframe playback cannot be
-  # controlled reliably by the product-card hover lifecycle.
+  # Use the first video in product.media as the hover preview.
   assign hover_video = blank
-  if product != blank and settings.enable_hover_video != false
+  if product != blank
     for media in product.media
-      if media.media_type == 'video'
+      if media.media_type == 'video' or media.media_type == 'external_video'
         assign hover_video = media
         break
       endif
