@@ -2270,8 +2270,8 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 /* Subtle typography adjustments for editorial look */

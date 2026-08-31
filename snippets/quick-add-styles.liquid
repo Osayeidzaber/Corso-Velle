@@ -53,6 +53,7 @@
 
   product-card:is(:hover, :focus-within) .quick-add__button {
     opacity: 1;
+    transform: translateY(0);
   }
 
   button.quick-add__button {
@@ -73,6 +74,8 @@
     width: var(--quick-add-collapsed-width);
     cursor: pointer;
     opacity: var(--quick-add-mobile-opacity, 0);
+    transform: translateY(8px);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease, scale 0.2s ease, background-color 0.2s ease;
     overflow: hidden;
     pointer-events: all;
     position: absolute;

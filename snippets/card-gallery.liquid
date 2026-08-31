@@ -17,7 +17,7 @@
   # External videos are intentionally skipped because iframe playback cannot be
   # controlled reliably by the product-card hover lifecycle.
   assign hover_video = blank
-  if product != blank
+  if product != blank and settings.enable_hover_video != false
     for media in product.media
       if media.media_type == 'video'
         assign hover_video = media
@@ -215,38 +215,16 @@
     </a>
 
     {% if hover_video != blank %}
-      {%- assign mp4_sources = hover_video.sources | where: 'format', 'mp4' -%}
-      {%- assign optimal_source = mp4_sources | where: 'height', 720 | first -%}
-      {%- if optimal_source == blank -%}
-        {%- assign optimal_source = mp4_sources | where: 'height', 480 | first -%}
-      {%- endif -%}
-      {%- if optimal_source == blank -%}
-        {%- assign optimal_source = mp4_sources.first | default: hover_video.sources.first -%}
-      {%- endif -%}
-
       <div
         class="card-gallery__hover-video"
         data-hover-video-wrapper
         aria-hidden="true"
       >
-        <video
-          class="card-gallery__hover-video-media"
-          playsinline
-          webkit-playsinline
-          x5-playsinline
-          muted
-          loop
-          preload="none"
-        >
-          {%- if optimal_source != blank -%}
-            <source src="{{ optimal_source.url }}" type="{{ optimal_source.mime_type }}">
-          {%- endif -%}
-          {%- for source in hover_video.sources -%}
-            {%- if source.format == 'mp4' and source.url != optimal_source.url -%}
-              <source src="{{ source.url }}" type="{{ source.mime_type }}">
-            {%- endif -%}
-          {%- endfor -%}
-        </video>
+        {%- if hover_video.media_type == 'video' -%}
+          {{ hover_video | video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, class: 'card-gallery__hover-video-media' }}
+        {%- else -%}
+          {{ hover_video | external_video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, class: 'card-gallery__hover-video-media' }}
+        {%- endif -%}
       </div>
     {% endif %}
   {% elsif product != blank and product.media.size == 0 %}
@@ -295,7 +273,7 @@
   .card-gallery .product-media-container video,
   .card-gallery__hover-video-media,
   .card-gallery__hover-video video {
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease;
     will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -303,21 +281,21 @@
 
   .card-gallery slideshow-component,
   .card-gallery .product-media-container {
-    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.35s ease;
   }
 
   /* Optional native product video preview, shown only after hover playback starts. */
   .card-gallery__hover-video {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 5;
     overflow: hidden;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     border-radius: inherit;
     background: transparent;
-    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     will-change: opacity, transform;
   }
 
@@ -329,17 +307,22 @@
     object-fit: cover;
   }
 
-  .card-gallery.is-hover-video-playing .card-gallery__hover-video {
-    opacity: 1;
-    visibility: visible;
+  .card-gallery.is-hover-video-playing .card-gallery__hover-video,
+  .product-card.is-hover-video-playing .card-gallery__hover-video,
+  .product-card:hover .card-gallery__hover-video {
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 100 !important;
   }
 
   .card-gallery.is-hover-video-playing slideshow-component,
-  .card-gallery.is-hover-video-playing a.contents > .product-media-container {
+  .card-gallery.is-hover-video-playing a.contents > .product-media-container,
+  .product-card.is-hover-video-playing slideshow-component,
+  .product-card.is-hover-video-playing a.contents > .product-media-container {
     opacity: 0;
   }
 
-  @media (hover: none), (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
     .card-gallery__hover-video {
       display: none;
     }
@@ -348,8 +331,10 @@
   .card-gallery:hover .product-media-container img,
   .card-gallery:hover .product-media-container video,
   .card-gallery:hover .card-gallery__hover-video-media,
-  .card-gallery:hover .card-gallery__hover-video video {
-    transform: scale(1.035);
+  .card-gallery:hover .card-gallery__hover-video video,
+  .product-card:hover .product-media-container img,
+  .product-card:hover .card-gallery__hover-video-media {
+    transform: scale(1.05);
   }
 
 

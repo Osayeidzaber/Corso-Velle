@@ -1888,6 +1888,13 @@
       },
       {
         "type": "checkbox",
+        "id": "enable_hover_video",
+        "label": "Enable hover video",
+        "default": true,
+        "info": "Plays the first video found in product media on hover."
+      },
+      {
+        "type": "checkbox",
         "id": "product_card_carousel",
         "label": "t:settings.product_card_carousel",
         "default": true
