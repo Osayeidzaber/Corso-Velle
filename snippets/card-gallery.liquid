@@ -221,7 +221,7 @@
         aria-hidden="true"
       >
         {%- if hover_video.media_type == 'video' -%}
-          {{ hover_video | video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, class: 'card-gallery__hover-video-media' }}
+          {{ hover_video | video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'card-gallery__hover-video-media' }}
         {%- else -%}
           {{ hover_video | external_video_tag: autoplay: false, loop: true, muted: true, controls: false, playsinline: true, class: 'card-gallery__hover-video-media' }}
         {%- endif -%}
@@ -322,9 +322,9 @@
     opacity: 0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
+  @media (hover: none), (max-width: 749px), (prefers-reduced-motion: reduce) {
     .card-gallery__hover-video {
-      display: none;
+      display: none !important;
     }
   }
 

@@ -114,13 +114,7 @@
         | external_video_tag: data-video-type: 'vimeo'
       }}
     {% else %}
-      <auto-video>
-        {%- for source in video.sources -%}
-          {%- if source.format == 'mp4' -%}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
-          {%- endif -%}
-        {%- endfor -%}
-      </auto-video>
+      {{ video | video_tag: autoplay: true, loop: video_loop, muted: true, controls: controls, playsinline: true, class: 'video-background__media' }}
     {% endif %}
   {% endcapture %}
 {% endif %}

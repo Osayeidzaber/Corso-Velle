@@ -483,33 +483,8 @@ export class ProductCard extends ProductCardLink {
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
-
-    // Pre-warm the video stream when the card approaches the viewport
-    let isLoaded = false;
-    const preloadVideo = () => {
-      if (isLoaded) return;
-      isLoaded = true;
-      video.load();
-    };
-
-    let observer = null;
-    if ('IntersectionObserver' in window) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              preloadVideo();
-              observer?.disconnect();
-              observer = null;
-            }
-          }
-        },
-        { rootMargin: '250px' }
-      );
-      observer.observe(this);
-    } else {
-      preloadVideo();
-    }
+    video.preload = 'auto';
+    video.setAttribute('preload', 'auto');
 
     let isHovered = false;
 
@@ -517,7 +492,6 @@ export class ProductCard extends ProductCardLink {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       isHovered = true;
-      preloadVideo();
       gallery.classList.add('is-hover-video-playing');
       this.classList.add('is-hover-video-playing');
 
@@ -547,30 +521,18 @@ export class ProductCard extends ProductCardLink {
       } catch (e) {}
     };
 
-    // Touch tap handler for phone (matches ARZ)
-    const touchHandler = () => {
-      if (video.paused) {
-        playVideo();
-      } else {
-        stopVideo();
-      }
-    };
-
     this.addEventListener('mouseenter', playVideo);
     this.addEventListener('mouseleave', stopVideo);
     gallery.addEventListener('pointerenter', playVideo);
     gallery.addEventListener('pointerleave', stopVideo);
-    this.addEventListener('touchstart', touchHandler, { passive: true });
 
     this.#hoverVideo = video;
     this.#hoverVideoWrapper = wrapper;
     this.#hoverVideoCleanup = () => {
-      observer?.disconnect();
       this.removeEventListener('mouseenter', playVideo);
       this.removeEventListener('mouseleave', stopVideo);
       gallery.removeEventListener('pointerenter', playVideo);
       gallery.removeEventListener('pointerleave', stopVideo);
-      this.removeEventListener('touchstart', touchHandler);
       stopVideo();
     };
   }

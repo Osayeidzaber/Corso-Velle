@@ -8,13 +8,7 @@
 
 {%- if featured_video != blank -%}
   <div class="product-standalone-video" data-standalone-video>
-    <auto-video class="product-standalone-video__player">
-      {%- for source in featured_video.sources -%}
-        {%- if source.format == 'mp4' -%}
-          <source src="{{ source.url }}" type="{{ source.mime_type }}">
-        {%- endif -%}
-      {%- endfor -%}
-    </auto-video>
+    {{ featured_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, class: 'product-standalone-video__player' }}
   </div>
 {%- endif -%}
 
