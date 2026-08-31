@@ -125,10 +125,13 @@
     aspect-ratio: var(--size-style-aspect-ratio, auto);
   }
 
-  .video-interaction-hint,
-  .deferred-media__poster-icon,
-  .deferred-media__poster-button,
-  .video-placeholder-wrapper__poster-icon {
-    display: none !important;
+  .video-interaction-hint {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: var(--layer-flat);
+  }
+
+  .video-interaction-hint:hover {
+    opacity: 1;
   }
 {% endstylesheet %}

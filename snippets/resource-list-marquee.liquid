@@ -7,8 +7,8 @@
   {% render 'resource-list-marquee', items: items %}
 {%- enddoc -%}
 
-<div class="resource-list__marquee-container">
-  <div class="resource-list__marquee-track">
+<div class="resource-list__marquee-container" data-resource-marquee>
+  <div class="resource-list__marquee-track" data-marquee-track>
     {%- for i in (1..3) -%}
       <div class="resource-list__marquee-group" aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}">
         {%- for item in items -%}
@@ -21,6 +21,169 @@
   </div>
 </div>
 
+<script>
+(function() {
+  function initMarqueeDrag(container) {
+    if (!container || container._hasMarqueeDrag) return;
+    container._hasMarqueeDrag = true;
+
+    const track = container.querySelector('[data-marquee-track]');
+    if (!track) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+    let animationId = null;
+    let velocity = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let hasMoved = false;
+
+    function getTranslateX() {
+      const style = window.getComputedStyle(track);
+      const matrix = new DOMMatrixReadOnly(style.transform);
+      return matrix.m41;
+    }
+
+    function getGroupWidth() {
+      const group = track.querySelector('.resource-list__marquee-group');
+      if (!group) return 1000;
+      const gap = parseFloat(window.getComputedStyle(track).gap) || 16;
+      return group.offsetWidth + gap;
+    }
+
+    function onTouchStart(e) {
+      const touch = e.touches ? e.touches[0] : e;
+      isDragging = true;
+      hasMoved = false;
+      startX = touch.clientX;
+      lastX = touch.clientX;
+      lastTime = Date.now();
+      velocity = 0;
+
+      // Capture exact position and pause animation
+      currentTranslate = getTranslateX();
+      prevTranslate = currentTranslate;
+      track.style.animation = 'none';
+      track.style.transform = 'translate3d(' + currentTranslate + 'px, 0, 0)';
+      track.style.cursor = 'grabbing';
+      if (animationId) cancelAnimationFrame(animationId);
+    }
+
+    function onTouchMove(e) {
+      if (!isDragging) return;
+      const touch = e.touches ? e.touches[0] : e;
+      const diffX = touch.clientX - startX;
+      
+      if (Math.abs(diffX) > 5) {
+        hasMoved = true;
+      }
+
+      const now = Date.now();
+      const dt = now - lastTime || 1;
+      velocity = (touch.clientX - lastX) / dt;
+      lastX = touch.clientX;
+      lastTime = now;
+
+      let nextTranslate = prevTranslate + diffX;
+      const groupWidth = getGroupWidth();
+
+      // Wrap around seamless bounds
+      if (nextTranslate > 0) {
+        nextTranslate -= groupWidth;
+        prevTranslate -= groupWidth;
+      } else if (nextTranslate < -groupWidth * 2) {
+        nextTranslate += groupWidth;
+        prevTranslate += groupWidth;
+      }
+
+      currentTranslate = nextTranslate;
+      track.style.transform = 'translate3d(' + currentTranslate + 'px, 0, 0)';
+    }
+
+    function onTouchEnd(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      track.style.cursor = '';
+
+      // If moved, prevent accidental clicks on cards during drag
+      if (hasMoved) {
+        const preventClick = function(clickEvent) {
+          clickEvent.preventDefault();
+          clickEvent.stopPropagation();
+          window.removeEventListener('click', preventClick, true);
+        };
+        window.addEventListener('click', preventClick, true);
+      }
+
+      // Inertia momentum glide
+      let currentVelocity = velocity * 15;
+      const decay = 0.95;
+
+      function momentumStep() {
+        if (Math.abs(currentVelocity) > 0.5) {
+          currentTranslate += currentVelocity;
+          currentVelocity *= decay;
+
+          const groupWidth = getGroupWidth();
+          if (currentTranslate > 0) currentTranslate -= groupWidth;
+          if (currentTranslate < -groupWidth * 2) currentTranslate += groupWidth;
+
+          track.style.transform = 'translate3d(' + currentTranslate + 'px, 0, 0)';
+          animationId = requestAnimationFrame(momentumStep);
+        } else {
+          // Restart automatic scroll from current position
+          const groupWidth = getGroupWidth();
+          const progress = (-currentTranslate % groupWidth) / groupWidth;
+          const duration = parseFloat(window.getComputedStyle(container).getPropertyValue('--marquee-speed')) || 30;
+          const delay = -progress * duration;
+
+          track.style.transform = '';
+          track.style.animation = 'resource-list-marquee-anim ' + duration + 's linear infinite';
+          track.style.animationDelay = delay + 's';
+        }
+      }
+
+      if (Math.abs(currentVelocity) > 0.5) {
+        animationId = requestAnimationFrame(momentumStep);
+      } else {
+        const groupWidth = getGroupWidth();
+        const progress = ((-currentTranslate % groupWidth) + groupWidth) % groupWidth / groupWidth;
+        const duration = parseFloat(window.getComputedStyle(container).getPropertyValue('--marquee-speed')) || 30;
+        const delay = -progress * duration;
+
+        track.style.transform = '';
+        track.style.animation = 'resource-list-marquee-anim ' + duration + 's linear infinite';
+        track.style.animationDelay = delay + 's';
+      }
+    }
+
+    track.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    track.addEventListener('mousedown', onTouchStart);
+    window.addEventListener('mousemove', onTouchMove);
+    window.addEventListener('mouseup', onTouchEnd);
+  }
+
+  function setupMarquees() {
+    document.querySelectorAll('[data-resource-marquee]').forEach(initMarqueeDrag);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMarquees);
+  } else {
+    setupMarquees();
+  }
+
+  if ('MutationObserver' in window) {
+    new MutationObserver(setupMarquees).observe(document.documentElement, { childList: true, subtree: true });
+  }
+})();
+</script>
+
 {% stylesheet %}
   .resource-list__marquee-container {
     width: 100%;
@@ -28,6 +191,9 @@
     position: relative;
     padding-block: 16px;
     margin-block: -16px; /* account for hover scales */
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .resource-list__marquee-track {
@@ -37,6 +203,8 @@
     min-width: 100%;
     gap: var(--resource-list-column-gap, 16px);
     animation: resource-list-marquee-anim var(--marquee-speed, 30s) linear infinite;
+    will-change: transform;
+    touch-action: pan-y pinch-zoom;
   }
 
   .resource-list__marquee-container:hover .resource-list__marquee-track {
@@ -66,11 +234,11 @@
 
   @keyframes resource-list-marquee-anim {
     0% {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
       /* Shift left by the width of exactly one group + 1 gap */
-      transform: translateX(calc(-100% / 3 - (var(--resource-list-column-gap, 16px) * 2 / 3)));
+      transform: translate3d(calc(-100% / 3 - (var(--resource-list-column-gap, 16px) * 2 / 3)), 0, 0);
     }
   }
 {% endstylesheet %}

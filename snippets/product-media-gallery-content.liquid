@@ -119,23 +119,6 @@
     assign sorted_media = selected_product.media
   endif
 
-  # Pull out video from product pictures to showcase separately below
-  assign product_videos = selected_product.media | where: 'media_type', 'video'
-  assign featured_product_video = product_videos.first
-
-  if product_videos.size > 0
-    assign photo_media = '' | split: ','
-    for media in sorted_media
-      if media.media_type != 'video'
-        assign media_item = sorted_media | where: 'id', media.id
-        assign photo_media = photo_media | concat: media_item
-      endif
-    endfor
-    if photo_media.size > 0
-      assign sorted_media = photo_media
-    endif
-  endif
-
   assign has_image_drop = sorted_media | has: 'media_type', 'image'
 
   # Determine if we're in single column mode (carousel or grid with one column)
@@ -355,6 +338,7 @@
   <media-gallery
     class="
       spacing-style
+      sticky-content
       {% if media_presentation == 'grid' %}
         media-gallery--{{ block_settings.media_columns }}-column
         {% if block_settings.media_columns == "two" and block_settings.large_first_image%}media-gallery--large-first-image{% endif %}
@@ -1064,22 +1048,5 @@
 
   slideshow-slide.product-media-container--tallest {
     content-visibility: visible;
-  }
-
-  .product-featured-video {
-    width: 100%;
-    margin-top: calc(var(--image-gap, 16px) + 16px);
-    border-radius: var(--media-radius, 0px);
-    overflow: hidden;
-    background: transparent;
-    line-height: 0;
-  }
-
-  .product-featured-video__player {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: var(--media-radius, 0px);
-    object-fit: cover;
   }
 {% endstylesheet %}
