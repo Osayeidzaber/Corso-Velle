@@ -461,11 +461,11 @@ export class ProductCard extends ProductCardLink {
   #hoverVideoCleanup = null;
 
   /**
-   * Initializes the optional native product-video preview used on hover/touch.
-   * Handles desktop hover (mouseenter/mouseleave) and mobile touch (tap to
-   * play, tap-elsewhere/scroll-away to stop).  The existing image slideshow
-   * remains responsible for image previews and continues to receive the
-   * card-gallery pointer events.
+   * Initializes the optional native product-video preview.
+   * - Desktop: plays on mouseenter, stops on mouseleave (hover preview).
+   * - Mobile/touch: auto-plays when card scrolls into view, pauses when it
+   *   scrolls out.  No tap required — the video stays playing as long as the
+   *   card is visible.
    */
   #setupHoverVideo() {
     this.#teardownHoverVideo();
@@ -478,6 +478,7 @@ export class ProductCard extends ProductCardLink {
       return;
     }
 
+    // ── Force fastest possible loading ──
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
@@ -485,35 +486,14 @@ export class ProductCard extends ProductCardLink {
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
-    video.preload = 'metadata';
-    video.setAttribute('preload', 'metadata');
+    video.setAttribute('x5-playsinline', '');
+    video.setAttribute('disablepictureinpicture', '');
+    video.preload = 'auto';
+    video.setAttribute('preload', 'auto');
 
-    // ── Pre-warm: load video data when card approaches viewport ──
-    /** @type {IntersectionObserver | null} */
-    let preheatObserver = null;
-    if ('IntersectionObserver' in window) {
-      preheatObserver = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            if (video.readyState === 0) {
-              video.preload = 'auto';
-              video.setAttribute('preload', 'auto');
-              video.load();
-            }
-            // Force browser to buffer first frames for instant start
-            const warmPromise = video.play();
-            if (warmPromise !== undefined) {
-              warmPromise.then(() => {
-                video.pause();
-                try { video.currentTime = 0; } catch (_) {}
-              }).catch(() => {});
-            }
-            preheatObserver?.disconnect();
-            preheatObserver = null;
-          }
-        }
-      }, { rootMargin: '400px' });
-      preheatObserver.observe(this);
+    // Kick-start loading immediately — don't wait for intersection
+    if (video.readyState === 0) {
+      video.load();
     }
 
     let isPlaying = false;
@@ -552,88 +532,99 @@ export class ProductCard extends ProductCardLink {
       } catch (e) {}
     };
 
-    // ── Desktop: mouse / pointer events ──
+    // ── Detect touch vs mouse capability ──
+    const checkIsTouch = () => window.matchMedia('(hover: none)').matches || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+
+    // ── Desktop: mouse / pointer hover (always enabled for mouse pointers) ──
     const slideParent = this.closest('.resource-list__slide, .resource-list__marquee-item');
 
-    this.addEventListener('mouseenter', playVideo);
-    this.addEventListener('mouseleave', stopVideo);
-    gallery.addEventListener('pointerenter', playVideo);
-    gallery.addEventListener('pointerleave', stopVideo);
-    if (slideParent) {
-      slideParent.addEventListener('mouseenter', playVideo);
-      slideParent.addEventListener('mouseleave', stopVideo);
-    }
-
-    // ── Mobile: touch events (tap to play, tap-elsewhere to stop) ──
-    /** @type {((e: Event) => void) | null} */
-    let documentTapHandler = null;
-
-    const handleTouchStart = (/** @type {TouchEvent} */ e) => {
-      if (isPlaying) {
-        // Already playing → stop on second tap
-        stopVideo();
-        if (documentTapHandler) {
-          document.removeEventListener('touchstart', documentTapHandler, true);
-          documentTapHandler = null;
-        }
-      } else {
-        // Start playing
+    const handlePointerEnter = (e) => {
+      if (e.pointerType === 'mouse' || !checkIsTouch()) {
         playVideo();
-
-        // Register a one-time document-level listener to stop when tapping elsewhere
-        documentTapHandler = (/** @type {Event} */ docEvent) => {
-          if (!this.contains(/** @type {Node} */ (docEvent.target))) {
-            stopVideo();
-            documentTapHandler = null;
-          } else {
-            // Re-register if tap was still inside this card
-            document.addEventListener('touchstart', documentTapHandler, { once: true, capture: true, passive: true });
-          }
-        };
-        document.addEventListener('touchstart', documentTapHandler, { once: true, capture: true, passive: true });
       }
     };
 
-    this.addEventListener('touchstart', handleTouchStart, { passive: true });
+    const handlePointerLeave = (e) => {
+      if (e.pointerType === 'mouse' || !checkIsTouch()) {
+        stopVideo();
+      }
+    };
 
-    // ── Scroll-away guard: stop video when card leaves viewport ──
+    this.addEventListener('mouseenter', handlePointerEnter);
+    this.addEventListener('mouseleave', handlePointerLeave);
+    gallery.addEventListener('pointerenter', handlePointerEnter);
+    gallery.addEventListener('pointerleave', handlePointerLeave);
+    if (slideParent) {
+      slideParent.addEventListener('mouseenter', handlePointerEnter);
+      slideParent.addEventListener('mouseleave', handlePointerLeave);
+    }
+
+    // ── Mobile / Touch: auto-play when visible, stay playing until scrolled out ──
     /** @type {IntersectionObserver | null} */
-    let visibilityObserver = null;
+    let viewportObserver = null;
     if ('IntersectionObserver' in window) {
-      visibilityObserver = new IntersectionObserver((entries) => {
+      viewportObserver = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting && isPlaying) {
-            stopVideo();
-            if (documentTapHandler) {
-              document.removeEventListener('touchstart', documentTapHandler, true);
-              documentTapHandler = null;
+          if (entry.isIntersecting) {
+            if (checkIsTouch()) {
+              // On phone/mobile, auto-play video as soon as card is on screen
+              playVideo();
+            } else {
+              // On desktop, pre-buffer first frames for instant hover playback
+              if (video.readyState < 3) {
+                const warmPromise = video.play();
+                if (warmPromise !== undefined) {
+                  warmPromise.then(() => {
+                    video.pause();
+                    try { video.currentTime = 0; } catch (_) {}
+                  }).catch(() => {});
+                }
+              }
+            }
+          } else {
+            // Stop when card scrolls out of view
+            if (isPlaying) {
+              stopVideo();
             }
           }
         }
-      }, { threshold: 0 });
-      visibilityObserver.observe(this);
+      }, {
+        rootMargin: '100px',
+        threshold: 0.15
+      });
+      viewportObserver.observe(this);
     }
+
+    // ── Mobile gesture fallback: unlock autoplay if initially blocked ──
+    const gestureUnlock = () => {
+      if (checkIsTouch() && !isPlaying) {
+        const rect = this.getBoundingClientRect();
+        const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+        if (isInViewport) {
+          playVideo();
+        }
+      }
+    };
+    window.addEventListener('touchstart', gestureUnlock, { passive: true });
+    window.addEventListener('scroll', gestureUnlock, { passive: true });
+
+    this.#hoverVideoCleanup = () => {
+      this.removeEventListener('mouseenter', handlePointerEnter);
+      this.removeEventListener('mouseleave', handlePointerLeave);
+      gallery.removeEventListener('pointerenter', handlePointerEnter);
+      gallery.removeEventListener('pointerleave', handlePointerLeave);
+      if (slideParent) {
+        slideParent.removeEventListener('mouseenter', handlePointerEnter);
+        slideParent.removeEventListener('mouseleave', handlePointerLeave);
+      }
+      window.removeEventListener('touchstart', gestureUnlock);
+      window.removeEventListener('scroll', gestureUnlock);
+      viewportObserver?.disconnect();
+      stopVideo();
+    };
 
     this.#hoverVideo = video;
     this.#hoverVideoWrapper = wrapper;
-    this.#hoverVideoCleanup = () => {
-      this.removeEventListener('mouseenter', playVideo);
-      this.removeEventListener('mouseleave', stopVideo);
-      gallery.removeEventListener('pointerenter', playVideo);
-      gallery.removeEventListener('pointerleave', stopVideo);
-      this.removeEventListener('touchstart', handleTouchStart);
-      if (slideParent) {
-        slideParent.removeEventListener('mouseenter', playVideo);
-        slideParent.removeEventListener('mouseleave', stopVideo);
-      }
-      if (documentTapHandler) {
-        document.removeEventListener('touchstart', documentTapHandler, true);
-        documentTapHandler = null;
-      }
-      preheatObserver?.disconnect();
-      visibilityObserver?.disconnect();
-      stopVideo();
-    };
   }
 
   /** Stops hover-video playback and removes its event listeners. */
