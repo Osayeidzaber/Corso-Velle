@@ -552,23 +552,9 @@ export class ProductCard extends ProductCardLink {
       } catch (e) {}
     };
 
-    // ── Instant Hover: Start on mouseenter / pointerenter immediately ──
-    const slideParent = this.closest('.resource-list__slide, .resource-list__marquee-item');
-
+    // ── Instant Hover: Start on mouseenter, stop on mouseleave ──
     this.addEventListener('mouseenter', playVideo);
     this.addEventListener('mouseleave', stopVideo);
-    this.addEventListener('pointerenter', playVideo);
-    this.addEventListener('pointerleave', stopVideo);
-    gallery.addEventListener('mouseenter', playVideo);
-    gallery.addEventListener('mouseleave', stopVideo);
-    gallery.addEventListener('pointerenter', playVideo);
-    gallery.addEventListener('pointerleave', stopVideo);
-    if (slideParent) {
-      slideParent.addEventListener('mouseenter', playVideo);
-      slideParent.addEventListener('mouseleave', stopVideo);
-      slideParent.addEventListener('pointerenter', playVideo);
-      slideParent.addEventListener('pointerleave', stopVideo);
-    }
 
     // ── Mobile / Touch: Play on touchstart ──
     const touchHandler = () => {
@@ -597,19 +583,7 @@ export class ProductCard extends ProductCardLink {
     this.#hoverVideoCleanup = () => {
       this.removeEventListener('mouseenter', playVideo);
       this.removeEventListener('mouseleave', stopVideo);
-      this.removeEventListener('pointerenter', playVideo);
-      this.removeEventListener('pointerleave', stopVideo);
-      gallery.removeEventListener('mouseenter', playVideo);
-      gallery.removeEventListener('mouseleave', stopVideo);
-      gallery.removeEventListener('pointerenter', playVideo);
-      gallery.removeEventListener('pointerleave', stopVideo);
       this.removeEventListener('touchstart', touchHandler);
-      if (slideParent) {
-        slideParent.removeEventListener('mouseenter', playVideo);
-        slideParent.removeEventListener('mouseleave', stopVideo);
-        slideParent.removeEventListener('pointerenter', playVideo);
-        slideParent.removeEventListener('pointerleave', stopVideo);
-      }
       visibilityObserver?.disconnect();
       stopVideo();
     };
