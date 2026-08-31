@@ -267,6 +267,13 @@
     container-name: card-gallery-container; /* Optional: name the container */
   }
 
+  /* Prevent inner product card images from moving/swapping on touch */
+  .card-gallery slideshow-slides {
+    overflow-x: hidden !important;
+    touch-action: pan-y !important;
+    scroll-snap-type: none !important;
+  }
+
 
 
   .card-gallery .product-media-container img,
@@ -318,6 +325,7 @@
 
   /* CSS :hover visibility — only on devices with a real pointer (not touch) */
   @media (hover: hover) {
+    .card-gallery:hover .card-gallery__hover-video,
     .product-card:hover .card-gallery__hover-video,
     .resource-list__slide:hover .card-gallery__hover-video,
     .resource-list__marquee-item:hover .card-gallery__hover-video {

@@ -525,36 +525,18 @@ export class ProductCard extends ProductCardLink {
       this.classList.add('is-hover-video-playing');
 
       video.muted = true;
+      video.defaultMuted = true;
       video.playsInline = true;
 
-      if (video.readyState === 0) {
-        video.load();
-      }
-
-      const startPlayback = () => {
-        if (!isHoverActive) return;
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((err) => {
-            // If aborted because user quickly left, that's normal
-            if (err.name !== 'AbortError' && isHoverActive) {
-              // Retry on interaction if browser policy blocked it
-              const retryOnce = () => {
-                if (isHoverActive) video.play().catch(() => {});
-              };
-              window.addEventListener('touchstart', retryOnce, { once: true, passive: true });
-              window.addEventListener('mousemove', retryOnce, { once: true, passive: true });
-            }
-          });
-        }
-      };
-
-      if (video.readyState >= 2) {
-        startPlayback();
-      } else {
-        video.addEventListener('canplay', startPlayback, { once: true });
-        video.addEventListener('loadeddata', startPlayback, { once: true });
-        startPlayback(); // Trigger anyway in case canplay was already fired
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          if (!isHoverActive) {
+            wrapper.classList.remove('is-playing');
+            gallery.classList.remove('is-hover-video-playing');
+            this.classList.remove('is-hover-video-playing');
+          }
+        });
       }
     };
 
@@ -570,45 +552,35 @@ export class ProductCard extends ProductCardLink {
       } catch (e) {}
     };
 
-    // ── Interaction: Desktop Hover (mouse) ──
+    // ── Instant Hover: Start on mouseenter / pointerenter immediately ──
     const slideParent = this.closest('.resource-list__slide, .resource-list__marquee-item');
 
-    const handlePointerEnter = (e) => {
-      if (e.pointerType === 'mouse') {
-        playVideo();
-      }
-    };
-
-    const handlePointerLeave = (e) => {
-      if (e.pointerType === 'mouse') {
-        stopVideo();
-      }
-    };
-
-    this.addEventListener('pointerenter', handlePointerEnter);
-    this.addEventListener('pointerleave', handlePointerLeave);
     this.addEventListener('mouseenter', playVideo);
     this.addEventListener('mouseleave', stopVideo);
-    gallery.addEventListener('pointerenter', handlePointerEnter);
-    gallery.addEventListener('pointerleave', handlePointerLeave);
+    this.addEventListener('pointerenter', playVideo);
+    this.addEventListener('pointerleave', stopVideo);
+    gallery.addEventListener('mouseenter', playVideo);
+    gallery.addEventListener('mouseleave', stopVideo);
+    gallery.addEventListener('pointerenter', playVideo);
+    gallery.addEventListener('pointerleave', stopVideo);
     if (slideParent) {
       slideParent.addEventListener('mouseenter', playVideo);
       slideParent.addEventListener('mouseleave', stopVideo);
+      slideParent.addEventListener('pointerenter', playVideo);
+      slideParent.addEventListener('pointerleave', stopVideo);
     }
 
-    // ── Interaction: Mobile / Touch (press, hold, tap) ──
-    const handleTouch = () => {
-      playVideo();
-    };
-
-    this.addEventListener('touchstart', handleTouch, { passive: true });
-    this.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+    // ── Mobile / Touch: Play on touchstart ──
+    const touchHandler = () => {
+      if (video.paused) {
         playVideo();
+      } else {
+        stopVideo();
       }
-    }, { passive: true });
+    };
+    this.addEventListener('touchstart', touchHandler, { passive: true });
 
-    // ── Scroll out of view guard: pause if scrolled off screen ──
+    // ── Pause when scrolled off screen ──
     /** @type {IntersectionObserver | null} */
     let visibilityObserver = null;
     if ('IntersectionObserver' in window) {
@@ -623,18 +595,21 @@ export class ProductCard extends ProductCardLink {
     }
 
     this.#hoverVideoCleanup = () => {
-      this.removeEventListener('pointerenter', handlePointerEnter);
-      this.removeEventListener('pointerleave', handlePointerLeave);
       this.removeEventListener('mouseenter', playVideo);
       this.removeEventListener('mouseleave', stopVideo);
-      gallery.removeEventListener('pointerenter', handlePointerEnter);
-      gallery.removeEventListener('pointerleave', handlePointerLeave);
-      this.removeEventListener('touchstart', handleTouch);
+      this.removeEventListener('pointerenter', playVideo);
+      this.removeEventListener('pointerleave', stopVideo);
+      gallery.removeEventListener('mouseenter', playVideo);
+      gallery.removeEventListener('mouseleave', stopVideo);
+      gallery.removeEventListener('pointerenter', playVideo);
+      gallery.removeEventListener('pointerleave', stopVideo);
+      this.removeEventListener('touchstart', touchHandler);
       if (slideParent) {
         slideParent.removeEventListener('mouseenter', playVideo);
         slideParent.removeEventListener('mouseleave', stopVideo);
+        slideParent.removeEventListener('pointerenter', playVideo);
+        slideParent.removeEventListener('pointerleave', stopVideo);
       }
-      prewarmObserver?.disconnect();
       visibilityObserver?.disconnect();
       stopVideo();
     };

@@ -20,7 +20,7 @@
     if (!video || processedVideos.has(video)) return;
     processedVideos.add(video);
 
-    // Enforce essential inline autoplay attributes
+    // Enforce essential inline autoplay attributes and aggressive preloading
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
@@ -29,9 +29,14 @@
     video.setAttribute('webkit-playsinline', '');
     video.setAttribute('x5-playsinline', '');
     video.setAttribute('disablepictureinpicture', '');
-    if (!video.hasAttribute('preload')) {
-      video.preload = 'auto';
-      video.setAttribute('preload', 'auto');
+    video.preload = 'auto';
+    video.setAttribute('preload', 'auto');
+
+    // Instantly trigger background fetch so videos are buffered in advance
+    if (video.readyState === 0) {
+      try {
+        video.load();
+      } catch (_) {}
     }
 
     const wrapper = video.closest('.hero__media-wrapper, .card-gallery__hover-video, .product-standalone-video, .video-background__media') || video.parentElement;
