@@ -532,94 +532,100 @@ export class ProductCard extends ProductCardLink {
       } catch (e) {}
     };
 
-    // ── Detect touch vs mouse capability ──
-    const checkIsTouch = () => window.matchMedia('(hover: none)').matches || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth < 1024);
+    // ── Pre-warm video in background (buffers data so it starts instantly when hovered/touched) ──
+    /** @type {IntersectionObserver | null} */
+    let prewarmObserver = null;
+    if ('IntersectionObserver' in window) {
+      prewarmObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            if (video.readyState === 0) {
+              video.load();
+            }
+            // Silently buffer first frame in background while hidden
+            if (video.readyState < 2) {
+              const p = video.play();
+              if (p !== undefined) {
+                p.then(() => {
+                  if (!isPlaying) {
+                    video.pause();
+                    try { video.currentTime = 0; } catch (_) {}
+                  }
+                }).catch(() => {});
+              }
+            }
+            prewarmObserver?.disconnect();
+            prewarmObserver = null;
+          }
+        }
+      }, { rootMargin: '400px' });
+      prewarmObserver.observe(this);
+    }
 
-    // ── Desktop: mouse / pointer hover (always enabled for mouse pointers) ──
+    // ── Interaction: Desktop Hover (mouse) ──
     const slideParent = this.closest('.resource-list__slide, .resource-list__marquee-item');
 
     const handlePointerEnter = (e) => {
-      if (e.pointerType === 'mouse' || !checkIsTouch()) {
+      if (e.pointerType === 'mouse') {
         playVideo();
       }
     };
 
     const handlePointerLeave = (e) => {
-      if (e.pointerType === 'mouse' || !checkIsTouch()) {
+      if (e.pointerType === 'mouse') {
         stopVideo();
       }
     };
 
-    this.addEventListener('mouseenter', handlePointerEnter);
-    this.addEventListener('mouseleave', handlePointerLeave);
-    gallery.addEventListener('pointerenter', handlePointerEnter);
-    gallery.addEventListener('pointerleave', handlePointerLeave);
+    this.addEventListener('pointerenter', handlePointerEnter);
+    this.addEventListener('pointerleave', handlePointerLeave);
+    this.addEventListener('mouseenter', playVideo);
+    this.addEventListener('mouseleave', stopVideo);
     if (slideParent) {
-      slideParent.addEventListener('mouseenter', handlePointerEnter);
-      slideParent.addEventListener('mouseleave', handlePointerLeave);
+      slideParent.addEventListener('mouseenter', playVideo);
+      slideParent.addEventListener('mouseleave', stopVideo);
     }
 
-    // ── Mobile / Touch: auto-play when visible, stay playing until scrolled out ──
+    // ── Interaction: Mobile / Touch (press, hold, tap) ──
+    // When touched on phone, triggers the hover animation & video playback
+    // and stays playing until touching another card or scrolling away.
+    const handleTouch = (e) => {
+      playVideo();
+    };
+
+    this.addEventListener('touchstart', handleTouch, { passive: true });
+    this.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+        playVideo();
+      }
+    }, { passive: true });
+
+    // ── Scroll out of view guard: pause if scrolled off screen ──
     /** @type {IntersectionObserver | null} */
-    let viewportObserver = null;
+    let visibilityObserver = null;
     if ('IntersectionObserver' in window) {
-      viewportObserver = new IntersectionObserver((entries) => {
+      visibilityObserver = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            if (checkIsTouch()) {
-              // On phone/mobile, auto-play video as soon as card is on screen
-              playVideo();
-            } else {
-              // On desktop, pre-buffer first frames for instant hover playback
-              if (video.readyState < 3) {
-                const warmPromise = video.play();
-                if (warmPromise !== undefined) {
-                  warmPromise.then(() => {
-                    video.pause();
-                    try { video.currentTime = 0; } catch (_) {}
-                  }).catch(() => {});
-                }
-              }
-            }
-          } else {
-            // Stop when card scrolls out of view
-            if (isPlaying) {
-              stopVideo();
-            }
+          if (!entry.isIntersecting && isPlaying) {
+            stopVideo();
           }
         }
-      }, {
-        rootMargin: '100px',
-        threshold: 0.15
-      });
-      viewportObserver.observe(this);
+      }, { threshold: 0 });
+      visibilityObserver.observe(this);
     }
 
-    // ── Mobile gesture fallback: unlock autoplay if initially blocked ──
-    const gestureUnlock = () => {
-      if (checkIsTouch() && !isPlaying) {
-        const rect = this.getBoundingClientRect();
-        const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
-        if (isInViewport) {
-          playVideo();
-        }
-      }
-    };
-    window.addEventListener('touchstart', gestureUnlock, { passive: true });
-    window.addEventListener('scroll', gestureUnlock, { passive: true });
-
     this.#hoverVideoCleanup = () => {
-      this.removeEventListener('mouseenter', handlePointerEnter);
-      this.removeEventListener('mouseleave', handlePointerLeave);
-      gallery.removeEventListener('pointerenter', handlePointerEnter);
-      gallery.removeEventListener('pointerleave', handlePointerLeave);
+      this.removeEventListener('pointerenter', handlePointerEnter);
+      this.removeEventListener('pointerleave', handlePointerLeave);
+      this.removeEventListener('mouseenter', playVideo);
+      this.removeEventListener('mouseleave', stopVideo);
+      this.removeEventListener('touchstart', handleTouch);
       if (slideParent) {
-        slideParent.removeEventListener('mouseenter', handlePointerEnter);
-        slideParent.removeEventListener('mouseleave', handlePointerLeave);
+        slideParent.removeEventListener('mouseenter', playVideo);
+        slideParent.removeEventListener('mouseleave', stopVideo);
       }
-      window.removeEventListener('touchstart', gestureUnlock);
-      window.removeEventListener('scroll', gestureUnlock);
-      viewportObserver?.disconnect();
+      prewarmObserver?.disconnect();
+      visibilityObserver?.disconnect();
       stopVideo();
     };
 
