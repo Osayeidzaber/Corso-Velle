@@ -215,21 +215,29 @@
       }
     {% endif %}
 
-    /* Constrain all deferred-media content to parent bounds when specific aspect ratio is set */
+    /* Constrain all video and deferred-media content to parent bounds when specific aspect ratio is set */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media,
+    .product-media-container:not(.dialog-zoomed-gallery *) .product-media .direct-video-wrapper,
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media product-model {
       width: 100%;
       height: 100%;
       top: 0;
       left: 0;
+      position: absolute;
     }
 
     /* Ensure video and iframe elements respect container aspect ratio */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media video,
-    .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media iframe {
+    .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media iframe,
+    .product-media-container:not(.dialog-zoomed-gallery *) .product-media .direct-video-wrapper video,
+    .product-media-container:not(.dialog-zoomed-gallery *) .product-media .direct-video-wrapper iframe,
+    .product-media-container:not(.dialog-zoomed-gallery *) .product-media .video-background__media {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      position: absolute;
+      inset: 0;
+      display: block;
     }
 
     /* 3D models need special handling since they don't support object-fit */

@@ -39,7 +39,7 @@
       } catch (_) {}
     }
 
-    const wrapper = video.closest('.hero__media-wrapper, .card-gallery__hover-video, .product-standalone-video, .video-background__media') || video.parentElement;
+    const wrapper = video.closest('.hero__media-wrapper, .card-gallery__hover-video, .product-standalone-video, .video-background__media, .direct-video-wrapper, .product-media') || video.parentElement;
 
     const markLoaded = () => {
       if (wrapper) {
