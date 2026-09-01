@@ -1,14 +1,25 @@
 {%- doc -%}
-  Renders a standalone showcase video for the product, completely separate from the photo gallery.
+  Renders a showcase video for the product below the photo gallery.
   @param {product} product - Product object
 {%- enddoc -%}
 
-{%- assign product_videos = product.media | where: 'media_type', 'video' -%}
-{%- assign featured_video = product_videos.first -%}
+{%- assign p = product | default: closest.product -%}
+{%- assign featured_media = nil -%}
 
-{%- if featured_video != blank -%}
+{%- for media in p.media -%}
+  {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+    {%- assign featured_media = media -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if featured_media != blank -%}
   <div class="product-standalone-video" data-standalone-video>
-    {{ featured_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, class: 'product-standalone-video__player' }}
+    {%- if featured_media.media_type == 'video' -%}
+      {{ featured_media | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', class: 'product-standalone-video__player' }}
+    {%- else -%}
+      {{ featured_media | external_video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, class: 'product-standalone-video__player' }}
+    {%- endif -%}
   </div>
 {%- endif -%}
 
