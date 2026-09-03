@@ -278,22 +278,21 @@
   .card-gallery .product-media-container video,
   .card-gallery__hover-video-media,
   .card-gallery__hover-video video {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease;
-    will-change: transform;
+    transition: opacity 0.3s ease;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
 
   .card-gallery slideshow-component,
   .card-gallery .product-media-container {
-    transition: opacity 0.35s ease;
+    transition: opacity 0.3s ease;
   }
 
   /* Optional native product video preview, shown on hover/touch playback */
   .card-gallery__hover-video {
     position: absolute;
     inset: 0;
-    z-index: 5;
+    z-index: 2;
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
@@ -323,29 +322,12 @@
   .resource-list__marquee-item:hover .card-gallery__hover-video {
     opacity: 1 !important;
     visibility: visible !important;
-    z-index: 100 !important;
+    z-index: 2 !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .card-gallery__hover-video {
       display: none !important;
-    }
-  }
-
-  .card-gallery.is-hover-video-playing .product-media-container img,
-  .card-gallery.is-hover-video-playing .card-gallery__hover-video-media,
-  .product-card.is-hover-video-playing .card-gallery__hover-video-media {
-    transform: scale(1.04);
-  }
-
-  @media (hover: hover) {
-    .card-gallery:hover .product-media-container img,
-    .card-gallery:hover .product-media-container video,
-    .card-gallery:hover .card-gallery__hover-video-media,
-    .card-gallery:hover .card-gallery__hover-video video,
-    .product-card:hover .product-media-container img,
-    .product-card:hover .card-gallery__hover-video-media {
-      transform: scale(1.05);
     }
   }
 
