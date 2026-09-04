@@ -1535,13 +1535,13 @@
         "type": "checkbox",
         "id": "show_cart_note",
         "label": "t:settings.seller_note",
-        "default": false
+        "default": true
       },
       {
         "type": "checkbox",
         "id": "cart_note_open_by_default",
         "label": "t:settings.seller_note_open_by_default",
-        "default": false,
+        "default": true,
         "visible_if": "{{ settings.show_cart_note == true }}"
       },
       {
@@ -1549,6 +1549,33 @@
         "id": "show_add_discount_code",
         "label": "t:settings.add_discount_code",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_dob_picker",
+        "label": "Enable date of birth picker",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "dob_required",
+        "label": "Require date of birth for checkout",
+        "default": true,
+        "visible_if": "{{ settings.enable_dob_picker == true }}"
+      },
+      {
+        "type": "text",
+        "id": "dob_label",
+        "label": "Date of birth label",
+        "default": "Date of birth",
+        "visible_if": "{{ settings.enable_dob_picker == true }}"
+      },
+      {
+        "type": "text",
+        "id": "dob_subtext",
+        "label": "Date of birth helper text",
+        "default": "Required to proceed to checkout",
+        "visible_if": "{{ settings.enable_dob_picker == true }}"
       },
       {
         "type": "checkbox",

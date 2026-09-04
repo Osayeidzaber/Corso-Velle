@@ -257,6 +257,14 @@
   </div>
 </div>
 
+{% unless settings.enable_dob_picker == false %}
+  <script
+    type="module"
+    src="{{ 'cart-dob-picker.js' | asset_url }}"
+  ></script>
+  {% render 'cart-dob-picker' %}
+{% endunless %}
+
 <div class="cart__ctas">
   <button
     type="submit"

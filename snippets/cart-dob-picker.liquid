@@ -1,0 +1,375 @@
+{% doc %}
+  Renders a Date of Birth (DOB) picker for the checkout/cart flow.
+  Ensures customer's birthdate is collected, validated, and saved into cart attributes and order notes.
+{% enddoc %}
+
+{%- liquid
+  assign is_enabled = true
+  if settings.enable_dob_picker == false
+    assign is_enabled = false
+  endif
+
+  assign is_required = true
+  if settings.dob_required == false
+    assign is_required = false
+  endif
+
+  assign dob_title = settings.dob_label | default: 'Date of birth'
+  assign dob_subtext = settings.dob_subtext | default: 'Required to proceed to checkout'
+  assign current_dob = cart.attributes['Date of Birth'] | default: ''
+  assign current_year = 'now' | date: '%Y' | plus: 0
+  assign min_year = current_year | minus: 110
+-%}
+
+{%- if is_enabled -%}
+  <cart-dob-picker
+    class="cart-dob-picker"
+    data-required="{{ is_required }}"
+    data-skip-node-update
+  >
+    <div class="cart-dob-picker__inner">
+      <div class="cart-dob-picker__header">
+        <div class="cart-dob-picker__title-group">
+          <span class="cart-dob-picker__icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </span>
+          <label class="cart-dob-picker__label cart-primary-typography" for="cart-dob-month">
+            {{ dob_title }}
+          </label>
+        </div>
+        {%- if is_required -%}
+          <span class="cart-dob-picker__badge cart-secondary-typography">Required</span>
+        {%- endif -%}
+      </div>
+
+      {%- if dob_subtext != blank -%}
+        <p class="cart-dob-picker__subtext cart-secondary-typography">
+          {{ dob_subtext }}
+        </p>
+      {%- endif -%}
+
+      <div class="cart-dob-picker__fields">
+        <!-- Month Selector -->
+        <div class="cart-dob-picker__field cart-dob-picker__field--month">
+          <label class="visually-hidden" for="cart-dob-month">Birth Month</label>
+          <div class="cart-dob-picker__select-wrapper">
+            <select
+              id="cart-dob-month"
+              class="cart-dob-picker__select"
+              data-part="month"
+              aria-label="Birth Month"
+              data-skip-node-update
+            >
+              <option value="" disabled selected>Month</option>
+              <option value="01">Jan (01)</option>
+              <option value="02">Feb (02)</option>
+              <option value="03">Mar (03)</option>
+              <option value="04">Apr (04)</option>
+              <option value="05">May (05)</option>
+              <option value="06">Jun (06)</option>
+              <option value="07">Jul (07)</option>
+              <option value="08">Aug (08)</option>
+              <option value="09">Sep (09)</option>
+              <option value="10">Oct (10)</option>
+              <option value="11">Nov (11)</option>
+              <option value="12">Dec (12)</option>
+            </select>
+            <span class="cart-dob-picker__arrow" aria-hidden="true">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Day Selector -->
+        <div class="cart-dob-picker__field cart-dob-picker__field--day">
+          <label class="visually-hidden" for="cart-dob-day">Birth Day</label>
+          <div class="cart-dob-picker__select-wrapper">
+            <select
+              id="cart-dob-day"
+              class="cart-dob-picker__select"
+              data-part="day"
+              aria-label="Birth Day"
+              data-skip-node-update
+            >
+              <option value="" disabled selected>Day</option>
+              {%- for day in (1..31) -%}
+                {%- assign day_str = day -%}
+                {%- if day < 10 -%}{%- assign day_str = '0' | append: day -%}{%- endif -%}
+                <option value="{{ day_str }}">{{ day_str }}</option>
+              {%- endfor -%}
+            </select>
+            <span class="cart-dob-picker__arrow" aria-hidden="true">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Year Selector -->
+        <div class="cart-dob-picker__field cart-dob-picker__field--year">
+          <label class="visually-hidden" for="cart-dob-year">Birth Year</label>
+          <div class="cart-dob-picker__select-wrapper">
+            <select
+              id="cart-dob-year"
+              class="cart-dob-picker__select"
+              data-part="year"
+              aria-label="Birth Year"
+              data-skip-node-update
+            >
+              <option value="" disabled selected>Year</option>
+              {%- for yr in (min_year..current_year) reversed -%}
+                <option value="{{ yr }}">{{ yr }}</option>
+              {%- endfor -%}
+            </select>
+            <span class="cart-dob-picker__arrow" aria-hidden="true">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Success State -->
+      <div class="cart-dob-picker__verified" style="display: none;" aria-live="polite">
+        <span class="cart-dob-picker__verified-icon" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </span>
+        <span class="cart-dob-picker__verified-text cart-secondary-typography">
+          Date of birth: <strong class="cart-dob-picker__verified-date"></strong>
+        </span>
+      </div>
+
+      <!-- Error Alert Message -->
+      <div class="cart-dob-picker__error" role="alert" style="display: none;">
+        <span class="cart-dob-picker__error-icon" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </span>
+        <span class="cart-dob-picker__error-text cart-secondary-typography">
+          Please enter your date of birth to proceed to checkout.
+        </span>
+      </div>
+    </div>
+
+    <!-- Hidden form fields to submit with cart-form to checkout -->
+    <input
+      type="hidden"
+      name="attributes[Date of Birth]"
+      id="cart-dob-attribute-field"
+      form="cart-form"
+      value="{{ current_dob | escape }}"
+      data-skip-node-update
+    >
+    <input
+      type="hidden"
+      name="note"
+      id="cart-dob-note-field"
+      form="cart-form"
+      value="{{ cart.note | escape }}"
+      data-skip-node-update
+    >
+  </cart-dob-picker>
+{%- endif -%}
+
+{% stylesheet %}
+  .cart-dob-picker {
+    display: block;
+    width: 100%;
+    margin-block: var(--margin-xs, 8px) var(--margin-sm, 12px);
+  }
+
+  .cart-dob-picker__inner {
+    padding: 12px 14px;
+    background-color: var(--color-background, #FAF8F5);
+    border: 1px solid rgb(var(--color-foreground-rgb, 17 17 17) / 0.14);
+    border-radius: var(--style-border-radius-inputs, 0px);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .cart-dob-picker--error .cart-dob-picker__inner {
+    border-color: #b91c1c;
+    box-shadow: 0 0 0 1px #b91c1c;
+  }
+
+  .cart-dob-picker--shake {
+    animation: cart-dob-shake 0.4s ease-in-out;
+  }
+
+  @keyframes cart-dob-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  .cart-dob-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .cart-dob-picker__title-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cart-dob-picker__icon {
+    display: inline-flex;
+    align-items: center;
+    color: currentColor;
+    opacity: 0.8;
+  }
+
+  .cart-dob-picker__label {
+    font-size: var(--font-size--xs, 0.8rem);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-foreground, #111111);
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .cart-dob-picker__badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #991b1b;
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  .cart-dob-picker__subtext {
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb, 17 17 17) / 0.65);
+    margin: 0 0 10px 0;
+    line-height: 1.35;
+  }
+
+  .cart-dob-picker__fields {
+    display: grid;
+    grid-template-columns: 1.25fr 0.9fr 1.15fr;
+    gap: 6px;
+  }
+
+  .cart-dob-picker__field {
+    min-width: 0;
+  }
+
+  .cart-dob-picker__select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .cart-dob-picker__select {
+    width: 100%;
+    height: 38px;
+    padding: 0 24px 0 10px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    color: var(--color-input-text, #111111);
+    background-color: var(--color-input-background, #ffffff);
+    border: 1px solid rgb(var(--color-foreground-rgb, 17 17 17) / 0.2);
+    border-radius: var(--style-border-radius-inputs, 0px);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .cart-dob-picker__select:focus {
+    outline: none;
+    border-color: var(--color-foreground, #111111);
+    box-shadow: 0 0 0 1px var(--color-foreground, #111111);
+  }
+
+  .cart-dob-picker__select.cart-dob-picker__select--invalid {
+    border-color: #b91c1c;
+    background-color: #fff5f5;
+  }
+
+  .cart-dob-picker__arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    color: rgb(var(--color-foreground-rgb, 17 17 17) / 0.5);
+  }
+
+  .cart-dob-picker__verified {
+    margin-top: 8px;
+    padding: 5px 8px;
+    background-color: rgb(252 230 187 / 0.3);
+    border: 1px solid rgb(252 230 187 / 0.8);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 2px;
+  }
+
+  .cart-dob-picker__verified-icon {
+    display: inline-flex;
+    align-items: center;
+    color: #15803d;
+  }
+
+  .cart-dob-picker__verified-text {
+    font-size: 0.75rem;
+    color: var(--color-foreground, #111111);
+    line-height: 1.2;
+  }
+
+  .cart-dob-picker__verified-date {
+    font-weight: 600;
+  }
+
+  .cart-dob-picker__error {
+    margin-top: 8px;
+    padding: 6px 8px;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 2px;
+  }
+
+  .cart-dob-picker__error-icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .cart-dob-picker__error-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+{% endstylesheet %}
