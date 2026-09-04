@@ -27,7 +27,19 @@ class CartDobPicker extends HTMLElement {
   #errorEl = null;
   /** @type {HTMLElement | null} */
   #errorTextEl = null;
+  /** @type {HTMLButtonElement | null} */
+  #skipBtn = null;
+  /** @type {HTMLButtonElement | null} */
+  #undoBtn = null;
+  /** @type {HTMLElement | null} */
+  #skippedEl = null;
+  /** @type {HTMLElement | null} */
+  #fieldsEl = null;
+  /** @type {HTMLElement | null} */
+  #requiredBadgeEl = null;
 
+  /** @type {boolean} */
+  #isSkipped = false;
   /** @type {AbortController | null} */
   #activeFetch = null;
   /** @type {boolean} */
@@ -56,6 +68,11 @@ class CartDobPicker extends HTMLElement {
     this.#verifiedDateEl = this.querySelector('.cart-dob-picker__verified-date');
     this.#errorEl = this.querySelector('.cart-dob-picker__error');
     this.#errorTextEl = this.querySelector('.cart-dob-picker__error-text');
+    this.#skipBtn = this.querySelector('[data-skip-btn]');
+    this.#undoBtn = this.querySelector('[data-undo-btn]');
+    this.#skippedEl = this.querySelector('.cart-dob-picker__skipped');
+    this.#fieldsEl = this.querySelector('.cart-dob-picker__fields');
+    this.#requiredBadgeEl = this.querySelector('[data-required-badge]');
   }
 
   #ensureFormAssociation() {
@@ -81,6 +98,9 @@ class CartDobPicker extends HTMLElement {
     this.#monthSelect?.addEventListener('change', handlePartChange);
     this.#yearSelect?.addEventListener('change', handlePartChange);
     this.#daySelect?.addEventListener('change', () => this.#handleChange());
+
+    this.#skipBtn?.addEventListener('click', () => this.#skip(true));
+    this.#undoBtn?.addEventListener('click', () => this.#unskip());
 
     // Clear error highlights on focus/input
     [this.#monthSelect, this.#daySelect, this.#yearSelect].forEach((select) => {
@@ -134,8 +154,21 @@ class CartDobPicker extends HTMLElement {
   }
 
   #restoreValue() {
+    // 0. Try from localStorage if skipped
+    try {
+      if (localStorage.getItem('shopify_cart_dob_skipped') === 'true') {
+        this.#skip(false);
+        return;
+      }
+    } catch (e) {}
+
     // 1. Try from attribute field (rendered from cart.attributes['Date of Birth'])
     let savedDob = this.#attributeField?.value;
+
+    if (savedDob === 'Skipped') {
+      this.#skip(false);
+      return;
+    }
 
     // 2. Try from localStorage if not present
     if (!savedDob) {
@@ -157,8 +190,55 @@ class CartDobPicker extends HTMLElement {
     }
   }
 
+  #skip(triggerCartUpdate = true) {
+    this.#isSkipped = true;
+    this.#hideError();
+    if (this.#verifiedEl) this.#verifiedEl.style.display = 'none';
+    if (this.#fieldsEl) this.#fieldsEl.style.display = 'none';
+    if (this.#skippedEl) this.#skippedEl.style.display = 'flex';
+    if (this.#skipBtn) this.#skipBtn.style.display = 'none';
+    if (this.#requiredBadgeEl) this.#requiredBadgeEl.style.opacity = '0.35';
+
+    // Clear invalid styling
+    [this.#monthSelect, this.#daySelect, this.#yearSelect].forEach((el) => {
+      el?.classList.remove('cart-dob-picker__select--invalid');
+    });
+
+    try {
+      localStorage.setItem('shopify_cart_dob_skipped', 'true');
+    } catch (e) {}
+
+    if (this.#attributeField) {
+      this.#attributeField.value = 'Skipped';
+    }
+
+    if (triggerCartUpdate) {
+      const existingNote = (this.#noteField?.value || '').replace(/Date of Birth:\s*[^\n\r]+/gi, '').trim();
+      this.#sendCartUpdate('Skipped', existingNote);
+    }
+  }
+
+  #unskip() {
+    this.#isSkipped = false;
+    if (this.#fieldsEl) this.#fieldsEl.style.display = 'grid';
+    if (this.#skippedEl) this.#skippedEl.style.display = 'none';
+    if (this.#skipBtn) this.#skipBtn.style.display = '';
+    if (this.#requiredBadgeEl) this.#requiredBadgeEl.style.opacity = '1';
+
+    try {
+      localStorage.removeItem('shopify_cart_dob_skipped');
+    } catch (e) {}
+
+    if (this.isValid() && this.#monthSelect?.value && this.#daySelect?.value && this.#yearSelect?.value) {
+      this.#showVerified();
+      this.#syncValues(true);
+    } else {
+      if (this.#attributeField) this.#attributeField.value = '';
+    }
+  }
+
   #populateDate(dateStr) {
-    if (!dateStr || typeof dateStr !== 'string') return;
+    if (!dateStr || typeof dateStr !== 'string' || dateStr === 'Skipped') return;
     // Format could be YYYY-MM-DD or DD/MM/YYYY or DD Month YYYY
     let year = '', month = '', day = '';
 
@@ -192,6 +272,14 @@ class CartDobPicker extends HTMLElement {
   }
 
   #handleChange() {
+    if (this.#isSkipped) {
+      this.#isSkipped = false;
+      if (this.#fieldsEl) this.#fieldsEl.style.display = 'grid';
+      if (this.#skippedEl) this.#skippedEl.style.display = 'none';
+      if (this.#skipBtn) this.#skipBtn.style.display = '';
+      try { localStorage.removeItem('shopify_cart_dob_skipped'); } catch(e) {}
+    }
+
     const isNowValid = this.isValid();
 
     if (isNowValid) {
@@ -211,6 +299,10 @@ class CartDobPicker extends HTMLElement {
   }
 
   isValid() {
+    if (this.#isSkipped) {
+      return true;
+    }
+
     const m = this.#monthSelect?.value;
     const d = this.#daySelect?.value;
     const y = this.#yearSelect?.value;

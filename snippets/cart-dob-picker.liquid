@@ -4,8 +4,8 @@
 {% enddoc %}
 
 {%- liquid
-  assign is_enabled = true
-  if settings.enable_dob_picker == false
+  assign is_enabled = settings.enable_dob_picker
+  if is_enabled == nil
     assign is_enabled = false
   endif
 
@@ -42,9 +42,19 @@
             {{ dob_title }}
           </label>
         </div>
-        {%- if is_required -%}
-          <span class="cart-dob-picker__badge cart-secondary-typography">Required</span>
-        {%- endif -%}
+        <div class="cart-dob-picker__header-actions">
+          {%- if is_required -%}
+            <span class="cart-dob-picker__badge cart-secondary-typography" data-required-badge>Required</span>
+          {%- endif -%}
+          <button
+            type="button"
+            class="cart-dob-picker__skip-btn cart-secondary-typography"
+            data-skip-btn
+            aria-label="Skip entering date of birth"
+          >
+            {{ settings.dob_skip_label | default: 'Skip' }}
+          </button>
+        </div>
       </div>
 
       {%- if dob_subtext != blank -%}
@@ -136,6 +146,16 @@
             </span>
           </div>
         </div>
+      </div>
+
+      <!-- Skipped State -->
+      <div class="cart-dob-picker__skipped" style="display: none;" aria-live="polite">
+        <span class="cart-dob-picker__skipped-text cart-secondary-typography">
+          Date of birth: <em>Skipped</em>
+        </span>
+        <button type="button" class="cart-dob-picker__undo-btn cart-secondary-typography" data-undo-btn>
+          Enter birthdate
+        </button>
       </div>
 
       <!-- Verified Success State -->
@@ -246,6 +266,12 @@
     cursor: pointer;
   }
 
+  .cart-dob-picker__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .cart-dob-picker__badge {
     font-size: 0.65rem;
     font-weight: 600;
@@ -256,6 +282,52 @@
     border: 1px solid #fee2e2;
     padding: 1px 6px;
     border-radius: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .cart-dob-picker__skip-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: rgb(var(--color-foreground-rgb, 17 17 17) / 0.6);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .cart-dob-picker__skip-btn:hover {
+    color: var(--color-foreground, #111111);
+  }
+
+  .cart-dob-picker__skipped {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background-color: rgb(var(--color-foreground-rgb, 17 17 17) / 0.04);
+    border: 1px dashed rgb(var(--color-foreground-rgb, 17 17 17) / 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 2px;
+  }
+
+  .cart-dob-picker__skipped-text {
+    font-size: 0.75rem;
+    color: rgb(var(--color-foreground-rgb, 17 17 17) / 0.7);
+  }
+
+  .cart-dob-picker__undo-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-foreground, #111111);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
   }
 
   .cart-dob-picker__subtext {

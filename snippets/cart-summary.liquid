@@ -257,13 +257,13 @@
   </div>
 </div>
 
-{% unless settings.enable_dob_picker == false %}
+{% if settings.enable_dob_picker %}
   <script
     type="module"
     src="{{ 'cart-dob-picker.js' | asset_url }}"
   ></script>
   {% render 'cart-dob-picker' %}
-{% endunless %}
+{% endif %}
 
 <div class="cart__ctas">
   <button

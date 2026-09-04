@@ -1554,7 +1554,7 @@
         "type": "checkbox",
         "id": "enable_dob_picker",
         "label": "Enable date of birth picker",
-        "default": true
+        "default": false
       },
       {
         "type": "checkbox",
